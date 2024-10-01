@@ -42,6 +42,10 @@ jobs:
             c_compiler: cl
           - os: ubuntu-latest
             cpp_compiler: cl
+          - c_compiler: gcc
+            cpp_compiler: clang++
+          - c_compiler: clang
+            cpp_compiler: g++
 
     steps:
     - uses: actions/checkout@v4
