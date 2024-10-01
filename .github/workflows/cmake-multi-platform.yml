@@ -26,7 +26,7 @@ jobs:
         build_type: [Release]
         c_compiler: [gcc, clang, cl]
         cpp_compiler: [g++, clang++, cl]
-        generator:  ["-G 'Unix Makefiles'", "-G Ninja"]
+        generator:  ["-G 'Unix Makefiles'", "-G Ninja", ""]
         exclude:
           - os: windows-latest
             c_compiler: gcc
@@ -46,6 +46,16 @@ jobs:
             cpp_compiler: clang++
           - c_compiler: clang
             cpp_compiler: g++
+          - os: windows-latest
+            generator: "-G Ninja"
+          - c_compiler: gcc
+            generator: ""
+          - c_compiler: clang
+            generator: ""
+          - cpp_compiler: g++
+            generator: ""
+          - cpp_compiler: clang++
+            generator: ""
 
     steps:
     - uses: actions/checkout@v4
