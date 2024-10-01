@@ -65,6 +65,8 @@ jobs:
             generator: "-G 'Unix Makefiles'"
           - os: macos-latest
             generator: "-G Ninja"
+          - os: ubuntu-latest
+            generator: ""
 
     steps:
     - uses: actions/checkout@v4
