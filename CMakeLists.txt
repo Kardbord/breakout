@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.28)
-project(pong)
+project(breakout)
 set(CMAKE_CXX_STANDARD 17)
 
 if(NOT CMAKE_BUILD_TYPE)

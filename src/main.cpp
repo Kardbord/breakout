@@ -2,7 +2,7 @@
 #include <iostream>
 
 int main() {
-  std::cout << "Pong coming soon! :)\n";
+  std::cout << "Breakout coming soon! :)\n";
 
   return EXIT_SUCCESS;
 }

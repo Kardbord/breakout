@@ -1,7 +1,7 @@
-#ifndef PONG_GAMESTATE_HPP
-#define PONG_GAMESTATE_HPP
+#ifndef BREAKOUT_GAMESTATE_HPP
+#define BREAKOUT_GAMESTATE_HPP
 
-namespace pong::model {
+namespace breakout::model {
 
 class GameState {
 public:
@@ -16,6 +16,6 @@ public:
 protected:
 };
 
-} // namespace pong::model
+} // namespace breakout::model
 
 #endif
