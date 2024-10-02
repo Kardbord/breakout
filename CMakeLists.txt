@@ -20,6 +20,9 @@ endif()
 include_directories(src)
 set("${CMAKE_PROJECT_NAME}_SRC"
   src/main.cpp
+  src/breakout/model/GameState.cpp
+  src/breakout/view/GameView.cpp
+  src/breakout/controller/GameController.cpp
 )
 add_executable(${CMAKE_PROJECT_NAME} ${${CMAKE_PROJECT_NAME}_SRC})
 

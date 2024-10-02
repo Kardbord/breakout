@@ -16,8 +16,11 @@ SRC_DIRS=(src tests include examples)
 function main {
   pushd "${WD}" >/dev/null
   for d in "${SRC_DIRS[@]}"; do
-    # shellcheck disable=2038
-    find "${d}" -iname '*.h' -o -iname '*.cpp' | xargs clang-format -i -style=file
+    if [[ -d "${d}" ]]; then
+      echo "checking $d"
+      # shellcheck disable=2038
+      find "${d}" -iname '*.h' -o -iname '*.cpp' | xargs clang-format -i -style=file
+    fi
   done
   popd >/dev/null
 }
