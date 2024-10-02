@@ -14,36 +14,28 @@ auto GameView::render_main_menu(model::GameStateMainMenu const&) -> void {
   auto quit_button = Button("  Quit  ", []() -> void {}, ButtonOption::Simple());
 
   auto component = Renderer([&]() -> Element {
-    return vbox({
-      filler(),
-      hbox({
-        filler(),
-        vbox({
-          text(R"(                                                )"),
-          text(R"(    ____                 _               _      )"),
-          text(R"(   | __ ) _ __ ___  __ _| | _____  _   _| |_    )"),
-          text(R"(   |  _ \| '__/ _ \/ _` | |/ / _ \| | | | __|   )"),
-          text(R"(   | |_) | | |  __/ (_| |   < (_) | |_| | |_    )"),
-          text(R"(   |____/|_|  \___|\__,_|_|\_\___/ \__,_|\__|   )"),
-          text(R"(                                                )"),
-          text(R"(                                                )"),
-        }) | borderRounded,
-        filler(),
-      }),
-      filler(),
-      hbox({
-        filler(),
-        play_button->Render(),
-        filler(),
-      }),
-      filler(),
-      hbox({
-        filler(),
-        quit_button->Render(),
-        filler(),
-      }),
-      filler(),
-    });
+    FlexboxConfig config;
+    config.direction = FlexboxConfig::Direction::Column;
+    config.wrap = FlexboxConfig::Wrap::NoWrap;
+    config.justify_content = FlexboxConfig::JustifyContent::Center;
+    config.align_items = FlexboxConfig::AlignItems::Center;
+    config.align_content = FlexboxConfig::AlignContent::Center;
+    config.SetGap(0, 1);
+
+    return flexbox({
+      vbox({
+        text(R"(                                                )"),
+        text(R"(    ____                 _               _      )"),
+        text(R"(   | __ ) _ __ ___  __ _| | _____  _   _| |_    )"),
+        text(R"(   |  _ \| '__/ _ \/ _` | |/ / _ \| | | | __|   )"),
+        text(R"(   | |_) | | |  __/ (_| |   < (_) | |_| | |_    )"),
+        text(R"(   |____/|_|  \___|\__,_|_|\_\___/ \__,_|\__|   )"),
+        text(R"(                                                )"),
+        text(R"(                                                )"),
+      }) | borderRounded,
+      play_button->Render(),
+      quit_button->Render(),
+    }, config);
   });
 
   auto screen = ScreenInteractive::Fullscreen();
