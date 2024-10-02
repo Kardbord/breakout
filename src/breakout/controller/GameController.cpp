@@ -17,20 +17,20 @@ GameController::GameController() {
 
 }
 
-auto GameController::enter_main_menu(model::GameStateMainMenu const&) -> void {
-  std::cout << "Entering main menu!\n";
+auto GameController::enter_main_menu(model::GameStateMainMenu const& state) -> void {
+  m_view.render_main_menu(state);
 }
 
-auto GameController::enter_pause_menu(model::GameStatePauseMenu const&) -> void {
-  std::cout << "Entering pause menu!\n";
+auto GameController::enter_pause_menu(model::GameStatePauseMenu const& state) -> void {
+  m_view.render_pause_menu(state);
 }
 
-auto GameController::enter_game_starting(model::GameStateStarting const&) -> void {
-  std::cout << "Entering starting state!\n";
+auto GameController::enter_game_starting(model::GameStateStarting const& state) -> void {
+  m_view.render_game_starting(state);
 }
 
-auto GameController::enter_game_active(model::GameStateActive const&) -> void {
-  std::cout << "Entering active state!\n";
+auto GameController::enter_game_active(model::GameStateActive const& state) -> void {
+  m_view.render_game_active(state);
 }
 
 } // namespace breakout::controller
