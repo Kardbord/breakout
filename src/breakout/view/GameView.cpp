@@ -10,8 +10,8 @@ namespace breakout::view {
 auto GameView::render_main_menu(model::GameStateMainMenu const&) -> void {
   using namespace ftxui;
 
-  auto play_button = Button("  Play  ", []() -> void {}, ButtonOption::Simple());
-  auto quit_button = Button("  Quit  ", []() -> void {}, ButtonOption::Simple());
+  auto p_play_button = Button("  Play  ", []() -> void {}, ButtonOption::Simple());
+  auto p_quit_button = Button("  Quit  ", []() -> void {}, ButtonOption::Simple());
 
   auto component = Renderer([&]() -> Element {
     FlexboxConfig config;
@@ -33,8 +33,8 @@ auto GameView::render_main_menu(model::GameStateMainMenu const&) -> void {
         text(R"(                                                )"),
         text(R"(                                                )"),
       }) | borderRounded,
-      play_button->Render(),
-      quit_button->Render(),
+      p_play_button->Render(),
+      p_quit_button->Render(),
     }, config);
   });
 
