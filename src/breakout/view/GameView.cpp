@@ -49,7 +49,7 @@ auto GameView::render_main_menu(model::GameStateMainMenu const&, MainMenuHandler
       }) | borderRounded,
       p_play_button->Render(),
       p_quit_button->Render(),
-    }, config);
+    }, config) | border;
   });
 
   update_screen_renderer(component);

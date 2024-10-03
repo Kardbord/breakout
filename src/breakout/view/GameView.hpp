@@ -29,7 +29,7 @@ public:
   class MainMenuHandlers {
   public:
     MainMenuHandlers() = delete;
-    MainMenuHandlers(EventHandler const &handle_play, EventHandler const &handle_quit) :
+    MainMenuHandlers(EventHandler const handle_play, EventHandler const handle_quit) :
       m_play_handler{handle_play}, m_quit_handler{handle_quit} {}
 
     ~MainMenuHandlers() = default;

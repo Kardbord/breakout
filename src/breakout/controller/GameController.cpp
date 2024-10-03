@@ -24,14 +24,7 @@ GameController::~GameController() {
 }
 
 auto GameController::enter_main_menu(model::GameStateMainMenu const& state) -> void {
-  m_view.render_main_menu(state, {
-    []() -> void {
-      std::cout << "Handled play button!\n";
-    }, 
-    [this]() -> void {
-      m_view.exit_main_loop();
-    }
-  });
+  m_view.render_main_menu(state, {[this] { handle_play_button(); }, [this] { handle_quit_button(); }});
 }
 
 auto GameController::enter_pause_menu(model::GameStatePauseMenu const& state) -> void {
@@ -44,6 +37,15 @@ auto GameController::enter_game_starting(model::GameStateStarting const& state) 
 
 auto GameController::enter_game_active(model::GameStateActive const& state) -> void {
   m_view.render_game_active(state);
+}
+
+auto GameController::handle_play_button() -> void {
+  m_model = model::GameStateStarting();
+  std::visit(m_visitor, m_model);
+}
+
+auto GameController::handle_quit_button() -> void {
+  m_view.exit_main_loop();
 }
 
 } // namespace breakout::controller

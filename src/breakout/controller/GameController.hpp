@@ -60,6 +60,10 @@ private:
   auto enter_game_starting(model::GameStateStarting const&) -> void;
   auto enter_game_active(model::GameStateActive const&)     -> void;
 
+  auto handle_play_button() -> void;
+  auto handle_quit_button() -> void;
+
+
 };
 
 } // namespace breakout::controller

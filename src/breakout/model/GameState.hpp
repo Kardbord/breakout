@@ -8,10 +8,10 @@ public:
   GameStateMainMenu() = default;
   ~GameStateMainMenu() = default;
 
-  GameStateMainMenu(const GameStateMainMenu&) = delete;
-  GameStateMainMenu& operator=(const GameStateMainMenu&) = delete;
-  GameStateMainMenu(GameStateMainMenu&&) = delete;
-  GameStateMainMenu& operator=(GameStateMainMenu&&) = delete;
+  GameStateMainMenu(const GameStateMainMenu&) = default;
+  GameStateMainMenu& operator=(const GameStateMainMenu&) = default;
+  GameStateMainMenu(GameStateMainMenu&&) = default;
+  GameStateMainMenu& operator=(GameStateMainMenu&&) = default;
 
 protected:
 };
@@ -21,10 +21,10 @@ public:
   GameStatePauseMenu() = default;
   ~GameStatePauseMenu() = default;
 
-  GameStatePauseMenu(const GameStatePauseMenu&) = delete;
-  GameStatePauseMenu& operator=(const GameStatePauseMenu&) = delete;
-  GameStatePauseMenu(GameStatePauseMenu&&) = delete;
-  GameStatePauseMenu& operator=(GameStatePauseMenu&&) = delete;
+  GameStatePauseMenu(const GameStatePauseMenu&) = default;
+  GameStatePauseMenu& operator=(const GameStatePauseMenu&) = default;
+  GameStatePauseMenu(GameStatePauseMenu&&) = default;
+  GameStatePauseMenu& operator=(GameStatePauseMenu&&) = default;
 
 protected:
 };
@@ -34,10 +34,10 @@ public:
   GameStateStarting() = default;
   ~GameStateStarting() = default;
 
-  GameStateStarting(const GameStateStarting&) = delete;
-  GameStateStarting& operator=(const GameStateStarting&) = delete;
-  GameStateStarting(GameStateStarting&&) = delete;
-  GameStateStarting& operator=(GameStateStarting&&) = delete;
+  GameStateStarting(const GameStateStarting&) = default;
+  GameStateStarting& operator=(const GameStateStarting&) = default;
+  GameStateStarting(GameStateStarting&&) = default;
+  GameStateStarting& operator=(GameStateStarting&&) = default;
 
 protected:
 };
@@ -47,10 +47,10 @@ public:
   GameStateActive() = default;
   ~GameStateActive() = default;
 
-  GameStateActive(const GameStateActive&) = delete;
-  GameStateActive& operator=(const GameStateActive&) = delete;
-  GameStateActive(GameStateActive&&) = delete;
-  GameStateActive& operator=(GameStateActive&&) = delete;
+  GameStateActive(const GameStateActive&) = default;
+  GameStateActive& operator=(const GameStateActive&) = default;
+  GameStateActive(GameStateActive&&) = default;
+  GameStateActive& operator=(GameStateActive&&) = default;
 
 protected:
 };
