@@ -75,6 +75,7 @@ function build {
 }
 
 function main {
+  mkdir -p build
   pushd "${WD}" >/dev/null
   process_args "${@}"
   build
