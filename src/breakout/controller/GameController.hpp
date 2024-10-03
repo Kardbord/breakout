@@ -8,6 +8,19 @@
 
 namespace breakout::controller {
 
+// A helper class for visiting variants. This allows for
+// defining a set of overloaded callables for a variant
+// type, as opposed to a single callable capable of handling
+// any variant type.
+// See https://en.cppreference.com/w/cpp/utility/variant/visit
+template<typename... Ts>
+struct Visitor : Ts... { using Ts::operator()...; };
+// An deduction guide for the Visitor class. This allows the
+// compiler to deduce template arguments rather than requiring
+// them to explicitly defined.
+template<typename... Ts>
+Visitor(Ts...) -> Visitor<Ts...>;
+
 class GameController {
 public:
   // Primary entrypoint for the Breakout game.
@@ -32,26 +45,6 @@ private:
   /**/         model::GameStateActive> m_model;
 
   view::GameView m_view;
-
-  // A helper class for visiting the m_model variant. This allows
-  // for defining a set of overloaded callables for the variant
-  // type, as opposed to a single callable capable of handling any
-  // variant type.
-  // See https://en.cppreference.com/w/cpp/utility/variant/visit
-  template<typename... Ts>
-  struct Visitor : Ts... { using Ts::operator()...; };
-
-  // An deduction guide for the Visitor class. This allows the
-  // compiler to deduce template arguments rather than requiring
-  // them to explicitly defined.
-  template<typename... Ts>
-  Visitor(Ts...) -> Visitor<Ts...>;
-
-  template<class... Ts>
-  struct overloaded : Ts... { using Ts::operator()...; };
-  // explicit deduction guide (not needed as of C++20)
-  template<class... Ts>
-  overloaded(Ts...) -> overloaded<Ts...>;
 
   using VisitMainMenu  = std::function<void(model::GameStateMainMenu const&)>;
   using VisitPauseMenu = std::function<void(model::GameStatePauseMenu const&)>;
