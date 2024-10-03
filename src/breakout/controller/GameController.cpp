@@ -14,7 +14,13 @@ GameController::GameController() {
     [this](model::GameStateStarting const& state)  -> void { enter_game_starting(state); },
     [this](model::GameStateActive const& state)    -> void { enter_game_active(state);   },
   };
+}
 
+GameController::~GameController() {
+  // If I've done my job right elsewhere, this is redundant.
+  // But it doesn't hurt anything and it ensures the terminal
+  // state is restored.
+  m_view.exit_main_loop();
 }
 
 auto GameController::enter_main_menu(model::GameStateMainMenu const& state) -> void {
@@ -24,7 +30,6 @@ auto GameController::enter_main_menu(model::GameStateMainMenu const& state) -> v
     }, 
     [this]() -> void {
       m_view.exit_main_loop();
-      std::exit(0);
     }
   });
 }

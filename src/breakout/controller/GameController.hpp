@@ -14,7 +14,7 @@ public:
   auto run() -> void;
 
   GameController();
-  ~GameController() = default;
+  ~GameController();
 
   GameController(const GameController&) = delete;
   GameController& operator=(const GameController&) = delete;

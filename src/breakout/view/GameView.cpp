@@ -22,7 +22,12 @@ auto GameView::render_main_menu(model::GameStateMainMenu const&, MainMenuHandler
   auto p_play_button = Button("  Play  ", [&h]() -> void { h.handle_play_button(); }, ButtonOption::Simple());
   auto p_quit_button = Button("  Quit  ", [&h]() -> void { h.handle_quit_button(); }, ButtonOption::Simple());
 
-  auto component = Renderer([&]() -> Element {
+  auto container = Container::Vertical({
+    p_play_button,
+    p_quit_button,
+  });
+
+  auto component = Renderer(container, [&]() -> Element {
     FlexboxConfig config;
     config.direction = FlexboxConfig::Direction::Column;
     config.wrap = FlexboxConfig::Wrap::NoWrap;
