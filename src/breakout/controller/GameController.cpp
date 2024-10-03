@@ -18,7 +18,15 @@ GameController::GameController() {
 }
 
 auto GameController::enter_main_menu(model::GameStateMainMenu const& state) -> void {
-  m_view.render_main_menu(state);
+  m_view.render_main_menu(state, {
+    []() -> void {
+      std::cout << "Handled play button!\n";
+    }, 
+    [this]() -> void {
+      m_view.exit_main_loop();
+      std::exit(0);
+    }
+  });
 }
 
 auto GameController::enter_pause_menu(model::GameStatePauseMenu const& state) -> void {

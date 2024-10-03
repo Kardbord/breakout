@@ -7,11 +7,20 @@
 
 namespace breakout::view {
 
-auto GameView::render_main_menu(model::GameStateMainMenu const&) -> void {
+auto GameView::exit_main_loop() -> void {
+  m_screen.Exit();
+}
+
+auto GameView::update_screen_renderer(ftxui::Component renderer) -> void {
+  exit_main_loop();
+  m_screen.Loop(renderer);
+}
+
+auto GameView::render_main_menu(model::GameStateMainMenu const&, MainMenuHandlers const &h) -> void {
   using namespace ftxui;
 
-  auto p_play_button = Button("  Play  ", []() -> void {}, ButtonOption::Simple());
-  auto p_quit_button = Button("  Quit  ", []() -> void {}, ButtonOption::Simple());
+  auto p_play_button = Button("  Play  ", [&h]() -> void { h.handle_play_button(); }, ButtonOption::Simple());
+  auto p_quit_button = Button("  Quit  ", [&h]() -> void { h.handle_quit_button(); }, ButtonOption::Simple());
 
   auto component = Renderer([&]() -> Element {
     FlexboxConfig config;
@@ -38,14 +47,7 @@ auto GameView::render_main_menu(model::GameStateMainMenu const&) -> void {
     }, config);
   });
 
-  auto screen = ScreenInteractive::Fullscreen();
-
-  // TODO: This loop is blocking. Figure out how to make this fit within
-  // the MVC design pattern. The controller should be the one to handle
-  // button presses, including quitting the main loop.
-  // As a side-note, I think the only way to swap between states is to
-  // exit the current screen loop and draw a completely new screen.
-  screen.Loop(component);
+  update_screen_renderer(component);
 }
 
 auto GameView::render_pause_menu(model::GameStatePauseMenu const&)-> void {
@@ -60,5 +62,6 @@ auto GameView::render_game_starting(model::GameStateStarting const&) -> void {
 auto GameView::render_game_active(model::GameStateActive const&) -> void {
   std::cout << "Rendering active game!\n";
 }
+
 
 } // namespace breakout::view

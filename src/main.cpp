@@ -9,7 +9,7 @@ int main() {
   try {
     controller.run();
   } catch (std::exception const &e) {
-    std::cerr << "Error! Encounterted exception: " << e.what() << "\n";
+    std::cerr << "Error! Encountered exception: " << e.what() << "\n";
     return EXIT_FAILURE;
   }
 
