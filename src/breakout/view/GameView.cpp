@@ -39,6 +39,12 @@ auto GameView::render_main_menu(model::GameStateMainMenu const&) -> void {
   });
 
   auto screen = ScreenInteractive::Fullscreen();
+
+  // TODO: This loop is blocking. Figure out how to make this fit within
+  // the MVC design pattern. The controller should be the one to handle
+  // button presses, including quitting the main loop.
+  // As a side-note, I think the only way to swap between states is to
+  // exit the current screen loop and draw a completely new screen.
   screen.Loop(component);
 }
 
