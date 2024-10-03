@@ -20,8 +20,6 @@ public:
 
   auto exit_main_loop() -> void;
 
-  auto update_screen_renderer(ftxui::Component) -> void;
-
   auto render_pause_menu(model::GameStatePauseMenu const&)   -> void;
   auto render_game_starting(model::GameStateStarting const&) -> void;
   auto render_game_active(model::GameStateActive const&)     -> void;
@@ -52,6 +50,8 @@ public:
 
 private:
   ftxui::ScreenInteractive m_screen{ftxui::ScreenInteractive::Fullscreen()};
+
+  auto update_screen_renderer(ftxui::Component) -> void;
 };
 
 } // namespace breakout::view
