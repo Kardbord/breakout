@@ -27,7 +27,9 @@ auto GameController::handle_event(ftxui::Event e) -> bool {
     [e](model::GameStateActive &state)    -> void { state.set_last_event(e); },
   }, *mp_state);
 
-  return std::visit(m_visitor, *mp_state);
+  const bool handled = std::visit(m_visitor, *mp_state);
+  m_view.render();
+  return handled;
 }
 
 auto GameController::handle_main_menu_events(model::GameStateMainMenu const& state) -> bool {
