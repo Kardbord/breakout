@@ -2,11 +2,12 @@
 #include "breakout/view/GameView.hpp"
 #include <breakout/controller/GameController.hpp>
 #include <ftxui/component/event.hpp>
+#include <iostream>
 
 namespace breakout::controller {
 
 auto GameController::run() -> void {
-  m_view.main_loop();
+  m_view.render();
 }
 
 GameController::GameController() : mp_state{std::make_shared<model::GameState>()},
@@ -20,6 +21,7 @@ GameController::GameController() : mp_state{std::make_shared<model::GameState>()
 }
 
 auto GameController::handle_event(ftxui::Event e) -> bool {
+  std::cout << "Handling event: " << e.DebugString() << "\n";
   std::visit(utils::Visitor{
     [e](model::GameStateMainMenu &state)  -> void { state.set_last_event(e); },
     [e](model::GameStatePauseMenu &state) -> void { state.set_last_event(e); },
@@ -32,11 +34,15 @@ auto GameController::handle_event(ftxui::Event e) -> bool {
 
 auto GameController::handle_main_menu_events(model::GameStateMainMenu const& state) -> bool {
   auto const last_event = state.get_last_event();
+  std::cout << "Handling main menu event: " << last_event.DebugString() << std::endl;
   if (last_event == view::Event::QuitButton) {
+    std::cout << "Handling QuitButton! \n";
     m_view.exit_main_loop();
   } else if (last_event == view::Event::MainMenuPlayButton) {
+    std::cout << "Handling MainMenuPlayButton! \n";
     *mp_state = model::GameStateStarting{};
   } else {
+    std::cout << "Event was not for us: " << last_event.DebugString() << "\n";
     return false;
   }
 
