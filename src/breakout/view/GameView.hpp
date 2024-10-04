@@ -9,6 +9,7 @@
 #include <ftxui/component/task.hpp>
 #include <ftxui/dom/node.hpp>
 #include <functional>
+#include <memory>
 
 namespace breakout::view {
 
@@ -24,7 +25,7 @@ const ftxui::Event MainMenuPlayButton = ftxui::Event::Special("MainMenuPlayButto
 class GameView {
 public:
   GameView() = delete;
-  GameView(model::GameState const&, EventHandler const&);
+  GameView(std::weak_ptr<const model::GameState> const, EventHandler const&);
   ~GameView() = default;
 
   GameView(const GameView&) = delete;
@@ -43,6 +44,9 @@ public:
 private:
   ftxui::ScreenInteractive m_screen{ftxui::ScreenInteractive::Fullscreen()};
 
+  // A non-owning, read-only reference to the game state.
+  const std::weak_ptr<const model::GameState> mp_state;
+
   using VisitMainMenu  = std::function<ftxui::Element(model::GameStateMainMenu const&)>;
   using VisitPauseMenu = std::function<ftxui::Element(model::GameStatePauseMenu const&)>;
   using VisitStarting  = std::function<ftxui::Element(model::GameStateStarting const&)>;
@@ -53,13 +57,11 @@ private:
   /**/    VisitStarting,
   /**/    VisitActive> m_visitor;
 
-  ftxui::Component mp_container{nullptr};
-
   EventHandler m_event_handler;
 
   ftxui::Component mp_renderer{nullptr};
 
-
+  auto update_renderer(ftxui::Component p_container) -> void;
 };
 
 } // namespace breakout::view

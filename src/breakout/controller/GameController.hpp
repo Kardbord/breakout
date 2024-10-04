@@ -23,7 +23,7 @@ public:
 
 private:
 
-  model::GameState m_state;
+  std::shared_ptr<model::GameState> mp_state{nullptr};
 
   view::GameView m_view;
 

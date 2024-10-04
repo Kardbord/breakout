@@ -4,10 +4,11 @@
 #include <ftxui/component/component_options.hpp>
 #include <ftxui/component/screen_interactive.hpp>
 #include <ftxui/dom/elements.hpp>
+#include <memory>
 
 namespace breakout::view {
 
-GameView::GameView(model::GameState const& state, EventHandler const& event_handler) {
+GameView::GameView(std::weak_ptr<const model::GameState> const p_state, EventHandler const& event_handler) : mp_state{std::move(p_state)} {
   m_visitor = {
     [this](model::GameStateMainMenu const& state)  -> ftxui::Element { return render_main_menu(state); },
     [this](model::GameStatePauseMenu const& state) -> ftxui::Element { return render_pause_menu(state); },
@@ -15,16 +16,8 @@ GameView::GameView(model::GameState const& state, EventHandler const& event_hand
     [this](model::GameStateActive const& state)    -> ftxui::Element { return render_game_active(state); },
   };
 
-  mp_container = ftxui::Container::Vertical({});
-
   m_event_handler = event_handler;
-
-  auto p_tmp_renderer = ftxui::Renderer(mp_container, [&]() -> ftxui::Element {
-    return std::visit(m_visitor, state);
-  });
-  mp_renderer = ftxui::CatchEvent(p_tmp_renderer, [&](ftxui::Event event) -> bool {
-    return m_event_handler(event);
-  });
+  update_renderer(ftxui::Container::Vertical({}));
 }
 
 auto GameView::main_loop() -> void {
@@ -35,13 +28,33 @@ auto GameView::exit_main_loop() -> void {
   m_screen.Exit();
 }
 
+auto GameView::update_renderer(ftxui::Component p_container) -> void {
+  using ftxui::Renderer;
+  using ftxui::CatchEvent;
+  using ftxui::Element;
+
+  auto p_tmp_renderer = ftxui::Renderer(p_container, [&]() -> ftxui::Element {
+    auto p_state = mp_state.lock();
+    if (p_state == nullptr) {
+      throw std::bad_weak_ptr{};
+    }
+    return std::visit(m_visitor, *p_state);
+  });
+
+  auto p_new_renderer = ftxui::CatchEvent(p_tmp_renderer, [&](ftxui::Event event) -> bool {
+    return m_event_handler(event);
+  });
+
+  mp_renderer.swap(p_new_renderer);
+}
+
 auto GameView::render_main_menu(model::GameStateMainMenu const&) -> ftxui::Element {
   using namespace ftxui;
 
   auto p_play_button = Button("  Play  ", [this]() -> void { (void)m_event_handler(Event::MainMenuPlayButton); }, ButtonOption::Simple());
   auto p_quit_button = Button("  Quit  ", [this]() -> void { (void)m_event_handler(Event::QuitButton); }, ButtonOption::Simple());
 
-  mp_container = Container::Vertical({
+  auto p_container = Container::Vertical({
     p_play_button,
     p_quit_button,
   });
@@ -65,8 +78,7 @@ auto GameView::render_main_menu(model::GameStateMainMenu const&) -> ftxui::Eleme
       text(R"(                                                )"),
       text(R"(                                                )"),
     }) | borderRounded,
-    p_play_button->Render(),
-    p_quit_button->Render(),
+    p_container->Render(),
   }, config) | border;
 
 }
