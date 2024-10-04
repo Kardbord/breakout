@@ -27,9 +27,7 @@ auto GameController::handle_event(ftxui::Event e) -> bool {
     [e](model::GameStateActive &state)    -> void { state.set_last_event(e); },
   }, *mp_state);
 
-  const bool handled = std::visit(m_visitor, *mp_state);
-  m_view.render();
-  return handled;
+  return std::visit(m_visitor, *mp_state);
 }
 
 auto GameController::handle_main_menu_events(model::GameStateMainMenu const& state) -> bool {
@@ -38,6 +36,7 @@ auto GameController::handle_main_menu_events(model::GameStateMainMenu const& sta
     m_view.exit_main_loop();
   } else if (last_event == view::Event::MainMenuPlayButton) {
     *mp_state = model::GameStateStarting{};
+    m_view.render();
   } else {
     return false;
   }
