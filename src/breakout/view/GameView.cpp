@@ -86,10 +86,38 @@ auto GameView::build_pause_menu(model::GameStatePauseMenu const&) -> ftxui::Comp
 }
 
 auto GameView::build_game_starting(model::GameStateStarting const&) -> ftxui::Component {
-  using ftxui::Renderer;
-  using ftxui::Element;
-  return Renderer([]() -> Element {
-    return ftxui::text("Game starting placeholder");
+  using namespace::ftxui;
+
+  return Renderer([] {
+    auto brick = []() -> Element {
+      return text("████") | color(Color::Blue) | border | size(WIDTH, EQUAL, 5) | size(HEIGHT, EQUAL, 1);
+    };
+
+    auto paddle = text("██████████") | color(Color::Red) | size(WIDTH, EQUAL, 10) | size(HEIGHT, EQUAL, 1);
+
+    auto ball = text("●") | color(Color::White) | size(WIDTH, EQUAL, 1) | size(HEIGHT, EQUAL, 1);
+
+    auto bricks = vbox({
+      hbox({brick(), brick(), brick(), brick(), brick(), brick()}),
+      hbox({brick(), brick(), brick(), brick(), brick(), brick()}),
+      hbox({brick(), brick(), brick(), brick(), brick(), brick()}),
+    }) | vcenter | hcenter;
+
+    auto controls_overlay = vbox({
+      text("Controls:") | bold | underlined | color(Color::Yellow),
+      text("  ESC - Pause") | color(Color::White),
+      text("  Left/Right Arrow or A/D or J/L - Move Paddle") | color(Color::White),
+    }) | border | size(WIDTH, EQUAL, 30) | size(HEIGHT, EQUAL, 5) | hcenter | vcenter;
+    return vbox({
+      filler(),
+      controls_overlay,
+      filler(),
+      bricks,
+      filler(),
+      ball | vcenter | hcenter,
+      filler(),
+      paddle | hcenter,
+    });
   });
 }
 
