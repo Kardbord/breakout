@@ -6,17 +6,6 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
 
-if(MSVC)
-  add_compile_options(/W4 /WX)
-else()
-  add_compile_options(
-    -Wall -Wextra -Wpedantic -Werror
-    $<$<CONFIG:RELEASE>:-Ofast>
-    $<$<CONFIG:DEBUG>:-O0>
-    $<$<CONFIG:DEBUG>:-ggdb3>
-  )
-endif()
-
 include_directories(src)
 set("${CMAKE_PROJECT_NAME}_SRC"
   src/main.cpp
@@ -41,4 +30,17 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
   PRIVATE ftxui::dom
   PRIVATE ftxui::component
 )
+
+if(MSVC)
+  target_compile_options(${CMAKE_PROJECT_NAME} PUBLIC /W4 /WX)
+else()
+  target_compile_options(
+    ${CMAKE_PROJECT_NAME}
+    PUBLIC
+    -Wall -Wextra -Wpedantic -Werror
+    $<$<CONFIG:RELEASE>:-Ofast>
+    $<$<CONFIG:DEBUG>:-O0>
+    $<$<CONFIG:DEBUG>:-ggdb3>
+  )
+endif()
 
