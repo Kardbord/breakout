@@ -36,3 +36,4 @@
 !/build/README.md
 .vscode/
 .cache
+*.log
