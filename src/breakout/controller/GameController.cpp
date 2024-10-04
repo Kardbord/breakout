@@ -20,7 +20,7 @@ GameController::GameController() : m_state{},
 }
 
 auto GameController::handle_event(ftxui::Event e) -> bool {
-  std::visit(Visitor{
+  std::visit(utils::Visitor{
     [e](model::GameStateMainMenu &state)  -> void { state.set_last_event(e); },
     [e](model::GameStatePauseMenu &state) -> void { state.set_last_event(e); },
     [e](model::GameStateStarting &state)  -> void { state.set_last_event(e); },

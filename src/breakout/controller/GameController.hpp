@@ -32,7 +32,7 @@ private:
   using VisitStarting  = std::function<bool(model::GameStateStarting const&)>;
   using VisitActive    = std::function<bool(model::GameStateActive const&)>;
 
-  Visitor<VisitMainMenu,
+  utils::Visitor<VisitMainMenu,
   /**/    VisitPauseMenu,
   /**/    VisitStarting,
   /**/    VisitActive> m_visitor;

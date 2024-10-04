@@ -1,6 +1,8 @@
 #ifndef BREAKOUT_UTILS_VISITOR_HPP
 #define BREAKOUT_UTILS_VISITOR_HPP
 
+namespace breakout::utils {
+
 // A helper class for visiting variants. This allows for
 // defining a set of overloaded callables for a variant
 // type, as opposed to a single callable capable of handling
@@ -13,5 +15,7 @@ struct Visitor : Ts... { using Ts::operator()...; };
 // them to explicitly defined.
 template<typename... Ts>
 Visitor(Ts...) -> Visitor<Ts...>;
+
+} // namespace breakout::utils
 
 #endif

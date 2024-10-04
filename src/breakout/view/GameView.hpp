@@ -48,7 +48,7 @@ private:
   using VisitStarting  = std::function<ftxui::Element(model::GameStateStarting const&)>;
   using VisitActive    = std::function<ftxui::Element(model::GameStateActive const&)>;
 
-  Visitor<VisitMainMenu,
+  utils::Visitor<VisitMainMenu,
   /**/    VisitPauseMenu,
   /**/    VisitStarting,
   /**/    VisitActive> m_visitor;
