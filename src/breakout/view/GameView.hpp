@@ -2,15 +2,29 @@
 #define BREAKOUT_GAMEVIEW_HPP
 
 #include <breakout/model/GameState.hpp>
+#include <breakout/utils/Visitor.hpp>
+#include <ftxui/component/component.hpp>
+#include <ftxui/component/event.hpp>
 #include <ftxui/component/screen_interactive.hpp>
 #include <ftxui/component/task.hpp>
+#include <ftxui/dom/node.hpp>
 #include <functional>
 
 namespace breakout::view {
 
+using EventHandler = std::function<bool(ftxui::Event)>;
+
+namespace Event {
+
+const ftxui::Event QuitButton         = ftxui::Event::Special("QuitButton");
+const ftxui::Event MainMenuPlayButton = ftxui::Event::Special("MainMenuPlayButton");
+
+}
+
 class GameView {
 public:
-  GameView() = default;
+  GameView() = delete;
+  GameView(model::GameState const&, EventHandler const&);
   ~GameView() = default;
 
   GameView(const GameView&) = delete;
@@ -18,40 +32,34 @@ public:
   GameView(GameView&&) = delete;
   GameView& operator=(GameView&&) = delete;
 
+  auto main_loop() -> void;
   auto exit_main_loop() -> void;
 
-  auto render_pause_menu(model::GameStatePauseMenu const&)   -> void;
-  auto render_game_starting(model::GameStateStarting const&) -> void;
-  auto render_game_active(model::GameStateActive const&)     -> void;
-
-  using EventHandler = std::function<void()>;
-
-  class MainMenuHandlers {
-  public:
-    MainMenuHandlers() = delete;
-    MainMenuHandlers(EventHandler const handle_play, EventHandler const handle_quit) :
-      m_play_handler{handle_play}, m_quit_handler{handle_quit} {}
-
-    ~MainMenuHandlers() = default;
-    MainMenuHandlers(const MainMenuHandlers&) = default;
-    MainMenuHandlers& operator=(const MainMenuHandlers&) = default;
-    MainMenuHandlers(MainMenuHandlers&&) = default;
-    MainMenuHandlers& operator=(MainMenuHandlers&&) = default;
-
-    inline auto handle_play_button() const -> void { m_play_handler(); }
-    inline auto handle_quit_button() const -> void { m_quit_handler(); }
-
-  private:
-    EventHandler m_play_handler;
-    EventHandler m_quit_handler;
-  };
-
-  auto render_main_menu(model::GameStateMainMenu const&, MainMenuHandlers const&) -> void;
+  auto render_main_menu(model::GameStateMainMenu const&)     -> ftxui::Element;
+  auto render_pause_menu(model::GameStatePauseMenu const&)   -> ftxui::Element;
+  auto render_game_starting(model::GameStateStarting const&) -> ftxui::Element;
+  auto render_game_active(model::GameStateActive const&)     -> ftxui::Element;
 
 private:
   ftxui::ScreenInteractive m_screen{ftxui::ScreenInteractive::Fullscreen()};
 
-  auto update_screen_renderer(ftxui::Component) -> void;
+  using VisitMainMenu  = std::function<ftxui::Element(model::GameStateMainMenu const&)>;
+  using VisitPauseMenu = std::function<ftxui::Element(model::GameStatePauseMenu const&)>;
+  using VisitStarting  = std::function<ftxui::Element(model::GameStateStarting const&)>;
+  using VisitActive    = std::function<ftxui::Element(model::GameStateActive const&)>;
+
+  Visitor<VisitMainMenu,
+  /**/    VisitPauseMenu,
+  /**/    VisitStarting,
+  /**/    VisitActive> m_visitor;
+
+  ftxui::Component mp_container{nullptr};
+
+  EventHandler m_event_handler;
+
+  ftxui::Component mp_renderer{nullptr};
+
+
 };
 
 } // namespace breakout::view

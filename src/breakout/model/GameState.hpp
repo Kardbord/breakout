@@ -1,9 +1,31 @@
 #ifndef BREAKOUT_GAMESTATE_HPP
 #define BREAKOUT_GAMESTATE_HPP
 
+#include <ftxui/component/event.hpp>
+#include <variant>
+
 namespace breakout::model {
 
-class GameStateMainMenu {
+class GameStateBase {
+public:
+  GameStateBase() = default;
+  ~GameStateBase() = default;
+
+  GameStateBase(const GameStateBase&) = default;
+  GameStateBase& operator=(const GameStateBase&) = default;
+  GameStateBase(GameStateBase&&) = default;
+  GameStateBase& operator=(GameStateBase&&) = default;
+
+  auto set_last_event(ftxui::Event e) -> void;
+  auto get_last_event() const -> ftxui::Event;
+
+protected:
+  // Stores the most recent event passed to the model.
+  ftxui::Event m_last_event;
+};
+
+
+class GameStateMainMenu : public GameStateBase {
 public:
   GameStateMainMenu() = default;
   ~GameStateMainMenu() = default;
@@ -16,7 +38,7 @@ public:
 protected:
 };
 
-class GameStatePauseMenu {
+class GameStatePauseMenu : public GameStateBase {
 public:
   GameStatePauseMenu() = default;
   ~GameStatePauseMenu() = default;
@@ -29,7 +51,7 @@ public:
 protected:
 };
 
-class GameStateStarting {
+class GameStateStarting : public GameStateBase {
 public:
   GameStateStarting() = default;
   ~GameStateStarting() = default;
@@ -42,7 +64,7 @@ public:
 protected:
 };
 
-class GameStateActive {
+class GameStateActive : public GameStateBase {
 public:
   GameStateActive() = default;
   ~GameStateActive() = default;
@@ -54,6 +76,13 @@ public:
 
 protected:
 };
+
+// The ordering of template types is important here, as the
+// first alternative is initialized by default.
+using GameState = std::variant<model::GameStateMainMenu,
+/**/                           model::GameStatePauseMenu,
+/**/                           model::GameStateStarting,
+/**/                           model::GameStateActive>;
 
 } // namespace breakout::model
 

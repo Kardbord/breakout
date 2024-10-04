@@ -1,51 +1,62 @@
+#include "breakout/model/GameState.hpp"
+#include "breakout/view/GameView.hpp"
 #include <breakout/controller/GameController.hpp>
-#include <iostream>
+#include <ftxui/component/event.hpp>
 
 namespace breakout::controller {
 
 auto GameController::run() -> void {
-  std::visit(m_visitor, m_model);
+  m_view.main_loop();
 }
 
-GameController::GameController() {
+GameController::GameController() : m_state{},
+  m_view{m_state, [this](ftxui::Event e) -> bool { return handle_event(e); }} {
   m_visitor = {
-    [this](model::GameStateMainMenu const& state)  -> void { enter_main_menu(state);     },
-    [this](model::GameStatePauseMenu const& state) -> void { enter_pause_menu(state);    },
-    [this](model::GameStateStarting const& state)  -> void { enter_game_starting(state); },
-    [this](model::GameStateActive const& state)    -> void { enter_game_active(state);   },
+    [this](model::GameStateMainMenu const& state)  -> bool { return handle_main_menu_events(state); },
+    [this](model::GameStatePauseMenu const& state) -> bool { return handle_pause_menu_events(state); },
+    [this](model::GameStateStarting const& state)  -> bool { return handle_game_starting_events(state); },
+    [this](model::GameStateActive const& state)    -> bool { return handle_game_active_events(state); },
   };
 }
 
-GameController::~GameController() {
-  // If I've done my job right elsewhere, this is redundant.
-  // But it doesn't hurt anything and it ensures the terminal
-  // state is restored.
-  m_view.exit_main_loop();
+auto GameController::handle_event(ftxui::Event e) -> bool {
+  std::visit(Visitor{
+    [e](model::GameStateMainMenu &state)  -> void { state.set_last_event(e); },
+    [e](model::GameStatePauseMenu &state) -> void { state.set_last_event(e); },
+    [e](model::GameStateStarting &state)  -> void { state.set_last_event(e); },
+    [e](model::GameStateActive &state)    -> void { state.set_last_event(e); },
+  }, m_state);
+
+  return std::visit(m_visitor, m_state);
 }
 
-auto GameController::enter_main_menu(model::GameStateMainMenu const& state) -> void {
-  m_view.render_main_menu(state, {[this] { handle_play_button(); }, [this] { handle_quit_button(); }});
+auto GameController::handle_main_menu_events(model::GameStateMainMenu const& state) -> bool {
+  auto const last_event = state.get_last_event();
+  if (last_event == view::Event::QuitButton) {
+    m_view.exit_main_loop();
+  } else if (last_event == view::Event::MainMenuPlayButton) {
+    m_state = model::GameStateStarting{};
+  } else {
+    return false;
+  }
+
+  return true;
 }
 
-auto GameController::enter_pause_menu(model::GameStatePauseMenu const& state) -> void {
-  m_view.render_pause_menu(state);
+auto GameController::handle_pause_menu_events(model::GameStatePauseMenu const&) -> bool {
+
+  return true;
 }
 
-auto GameController::enter_game_starting(model::GameStateStarting const& state) -> void {
-  m_view.render_game_starting(state);
+auto GameController::handle_game_starting_events(model::GameStateStarting const&) -> bool {
+
+  return true;
 }
 
-auto GameController::enter_game_active(model::GameStateActive const& state) -> void {
-  m_view.render_game_active(state);
+auto GameController::handle_game_active_events(model::GameStateActive const&) -> bool {
+
+  return true;
 }
 
-auto GameController::handle_play_button() -> void {
-  m_model = model::GameStateStarting();
-  std::visit(m_visitor, m_model);
-}
-
-auto GameController::handle_quit_button() -> void {
-  m_view.exit_main_loop();
-}
 
 } // namespace breakout::controller
