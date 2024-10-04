@@ -5,7 +5,6 @@
 #include <ftxui/component/screen_interactive.hpp>
 #include <ftxui/dom/elements.hpp>
 #include <memory>
-#include <iostream>
 
 namespace breakout::view {
 
@@ -19,7 +18,6 @@ GameView::GameView(std::weak_ptr<const model::GameState> const p_state, EventHan
 }
 
 auto GameView::render() -> void {
-  std::cout << "Rendering!\n";
   ftxui::Component renderer;
 
   { // Scope for shared_ptr lock.
@@ -30,15 +28,11 @@ auto GameView::render() -> void {
     renderer = std::visit(m_visitor, *p_state);
   }
 
-  renderer = ftxui::CatchEvent(renderer, [&](ftxui::Event event) -> bool { return m_event_handler(event); });
+  renderer | ftxui::CatchEvent([&](ftxui::Event event) -> bool { return m_event_handler(event); });
   auto screen = ftxui::ScreenInteractive::Fullscreen();
-  std::cout << "Exiting main loop!\n";
   exit_main_loop();
-  std::cout << "Setting exit closure!\n";
   m_exit_closure = screen.ExitLoopClosure();
-  std::cout << "Entering new loop!\n";
   screen.Loop(renderer);
-  std::cout << "Quit loop!\n";
 }
 
 auto GameView::exit_main_loop() -> void {
@@ -56,7 +50,8 @@ auto GameView::build_main_menu(model::GameStateMainMenu const&) -> ftxui::Compon
     p_quit_button,
   });
 
-  return Renderer(p_container, [&]() -> Element {
+  // Need to capture these by value so that the references don't go out of scope.
+  return Renderer(p_container, [p_container, p_play_button, p_quit_button]() -> Element {
     FlexboxConfig config;
     config.direction = FlexboxConfig::Direction::Column;
     config.wrap = FlexboxConfig::Wrap::NoWrap;
