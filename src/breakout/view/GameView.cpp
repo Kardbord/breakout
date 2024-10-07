@@ -88,36 +88,41 @@ auto GameView::build_pause_menu(model::GameStatePauseMenu const&) -> ftxui::Comp
 auto GameView::build_game_starting(model::GameStateStarting const&) -> ftxui::Component {
   using namespace::ftxui;
 
-  return Renderer([] {
-    auto brick = []() -> Element {
-      return text("████") | color(Color::Blue) | border | size(WIDTH, EQUAL, 5) | size(HEIGHT, EQUAL, 1);
+  return Renderer([]() -> Element {
+
+    auto brick_row = [](ftxui::Color c, std::string brick_symbol = "█████", int num_bricks = 14) -> Element {
+      std::vector<Element> row_elements;
+      for (int i = 0; i < num_bricks; ++i) {
+        row_elements.push_back(text(brick_symbol) | color(c));
+      }
+      return hbox(row_elements);
     };
 
-    auto paddle = text("██████████") | color(Color::Red) | size(WIDTH, EQUAL, 10) | size(HEIGHT, EQUAL, 1);
+    auto paddle = [](int paddle_size = 5, std::string paddle_symbol = "█") -> Element {
+      std::vector<Element> paddle_elements;
+      for (int i = 0; i < paddle_size; ++i) {
+        paddle_elements.push_back(text(paddle_symbol) | bgcolor(Color::White));
+      }
+      return hbox(paddle_elements) | center;
+    };
 
-    auto ball = text("●") | color(Color::White) | size(WIDTH, EQUAL, 1) | size(HEIGHT, EQUAL, 1);
+    auto brick_layout = vbox({
+      brick_row(Color::Red),     // Two rows of red bricks
+      brick_row(Color::Red),
+      brick_row(Color::Orange1),  // Two rows of orange bricks
+      brick_row(Color::Orange1),
+      brick_row(Color::Green),   // Two rows of green bricks
+      brick_row(Color::Green),
+      brick_row(Color::Yellow),  // Two rows of yellow bricks
+      brick_row(Color::Yellow),
+    }) | center;
 
-    auto bricks = vbox({
-      hbox({brick(), brick(), brick(), brick(), brick(), brick()}),
-      hbox({brick(), brick(), brick(), brick(), brick(), brick()}),
-      hbox({brick(), brick(), brick(), brick(), brick(), brick()}),
-    }) | vcenter | hcenter;
 
-    auto controls_overlay = vbox({
-      text("Controls:") | bold | underlined | color(Color::Yellow),
-      text("  ESC - Pause") | color(Color::White),
-      text("  Left/Right Arrow or A/D or J/L - Move Paddle") | color(Color::White),
-    }) | border | size(WIDTH, EQUAL, 30) | size(HEIGHT, EQUAL, 5) | hcenter | vcenter;
     return vbox({
+      brick_layout,
       filler(),
-      controls_overlay,
-      filler(),
-      bricks,
-      filler(),
-      ball | vcenter | hcenter,
-      filler(),
-      paddle | hcenter,
-    });
+      paddle(7),
+    }) | border;
   });
 }
 
