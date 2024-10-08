@@ -133,15 +133,17 @@ auto GameView::build_main_menu(model::GameStateMainMenu const&) -> ftxui::Compon
   using namespace ftxui;
 
   auto p_play_button = Button("  Play  ", [this]() -> void { (void)m_event_handler(Event::MainMenuPlayButton); }, ButtonOption::Simple());
+  auto p_help_button = Button("  Help  ", [this]() -> void { (void)m_event_handler(Event::HelpButton); }, ButtonOption::Simple());
   auto p_quit_button = Button("  Quit  ", [this]() -> void { (void)m_event_handler(Event::QuitButton); }, ButtonOption::Simple());
 
   auto p_container = Container::Vertical({
     p_play_button,
+    p_help_button,
     p_quit_button,
   });
 
   // Need to capture these by value so that the references don't go out of scope.
-  return Renderer(p_container, [p_container, p_play_button, p_quit_button]() -> Element {
+  return Renderer(p_container, [p_container, p_play_button, p_help_button, p_quit_button]() -> Element {
     FlexboxConfig config;
     config.direction = FlexboxConfig::Direction::Column;
     config.wrap = FlexboxConfig::Wrap::NoWrap;
@@ -162,6 +164,7 @@ auto GameView::build_main_menu(model::GameStateMainMenu const&) -> ftxui::Compon
         text(R"(                                                )"),
       }) | borderRounded | color(Color::Cyan),
       p_play_button->Render(),
+      p_help_button->Render(),
       p_quit_button->Render(),
     }, config) | border;
   });

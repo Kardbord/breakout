@@ -20,6 +20,7 @@ namespace Event {
 
 const ftxui::Event QuitButton         = ftxui::Event::Special("QuitButton");
 const ftxui::Event MainMenuPlayButton = ftxui::Event::Special("MainMenuPlayButton");
+const ftxui::Event HelpButton     = ftxui::Event::Special("HelpButton");
 
 }
 
