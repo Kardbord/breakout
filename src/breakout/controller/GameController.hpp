@@ -29,20 +29,20 @@ private:
 
   using VisitMainMenu  = std::function<bool(model::GameStateMainMenu const&)>;
   using VisitPauseMenu = std::function<bool(model::GameStatePauseMenu const&)>;
-  using VisitStarting  = std::function<bool(model::GameStateStarting const&)>;
+  using VisitHelpMenu  = std::function<bool(model::GameStateHelpMenu const&)>;
   using VisitActive    = std::function<bool(model::GameStateActive const&)>;
 
   utils::Visitor<VisitMainMenu,
   /**/    VisitPauseMenu,
-  /**/    VisitStarting,
+  /**/    VisitHelpMenu,
   /**/    VisitActive> m_visitor;
 
   auto handle_event(ftxui::Event) -> bool;
 
-  auto handle_main_menu_events(model::GameStateMainMenu const&)     -> bool;
-  auto handle_pause_menu_events(model::GameStatePauseMenu const&)   -> bool;
-  auto handle_game_starting_events(model::GameStateStarting const&) -> bool;
-  auto handle_game_active_events(model::GameStateActive const&)     -> bool;
+  auto handle_main_menu_events(model::GameStateMainMenu const&)   -> bool;
+  auto handle_pause_menu_events(model::GameStatePauseMenu const&) -> bool;
+  auto handle_help_menu_events(model::GameStateHelpMenu const&)   -> bool;
+  auto handle_game_active_events(model::GameStateActive const&)   -> bool;
 };
 
 } // namespace breakout::controller

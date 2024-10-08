@@ -56,20 +56,20 @@ private:
 
   using VisitMainMenu  = std::function<ftxui::Component(model::GameStateMainMenu const&)>;
   using VisitPauseMenu = std::function<ftxui::Component(model::GameStatePauseMenu const&)>;
-  using VisitStarting  = std::function<ftxui::Component(model::GameStateStarting const&)>;
+  using VisitHelpMenu  = std::function<ftxui::Component(model::GameStateHelpMenu const&)>;
   using VisitActive    = std::function<ftxui::Component(model::GameStateActive const&)>;
 
   utils::Visitor<VisitMainMenu,
   /**/    VisitPauseMenu,
-  /**/    VisitStarting,
+  /**/    VisitHelpMenu,
   /**/    VisitActive> m_visitor;
 
   EventHandler m_event_handler;
 
-  auto build_main_menu(model::GameStateMainMenu const&)     -> ftxui::Component;
-  auto build_pause_menu(model::GameStatePauseMenu const&)   -> ftxui::Component;
-  auto build_game_starting(model::GameStateStarting const&) -> ftxui::Component;
-  auto build_game_active(model::GameStateActive const&)     -> ftxui::Component;
+  auto build_main_menu(model::GameStateMainMenu const&)   -> ftxui::Component;
+  auto build_pause_menu(model::GameStatePauseMenu const&) -> ftxui::Component;
+  auto build_help_menu(model::GameStateHelpMenu const&)   -> ftxui::Component;
+  auto build_game_active(model::GameStateActive const&)   -> ftxui::Component;
 
 };
 

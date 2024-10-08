@@ -102,7 +102,7 @@ GameView::GameView(std::weak_ptr<const model::GameState> const p_state, EventHan
   m_visitor = {
     [this](model::GameStateMainMenu const& state)  -> ftxui::Component { return build_main_menu(state); },
     [this](model::GameStatePauseMenu const& state) -> ftxui::Component { return build_pause_menu(state); },
-    [this](model::GameStateStarting const& state)  -> ftxui::Component { return build_game_starting(state); },
+    [this](model::GameStateHelpMenu const& state)  -> ftxui::Component { return build_help_menu(state); },
     [this](model::GameStateActive const& state)    -> ftxui::Component { return build_game_active(state); },
   };
 }
@@ -175,7 +175,7 @@ auto GameView::build_pause_menu(model::GameStatePauseMenu const&) -> ftxui::Comp
   });
 }
 
-auto GameView::build_game_starting(model::GameStateStarting const&) -> ftxui::Component {
+auto GameView::build_game_active(model::GameStateActive const&) -> ftxui::Component {
   using namespace::ftxui;
 
   return Renderer([]() -> Element {
@@ -233,15 +233,16 @@ auto GameView::build_game_starting(model::GameStateStarting const&) -> ftxui::Co
 
     int paddle_x_position = (canvas_width / 2) - (paddle_width / 2);
     draw_paddle(canvas, paddle_x_position, canvas_height - paddle_height - 1, Color::White);
-    return ftxui::canvas(canvas) | border | center;
+
+    return ftxui::canvas(canvas) | border | center | border;
   });
 }
 
-auto GameView::build_game_active(model::GameStateActive const&) -> ftxui::Component {
+auto GameView::build_help_menu(model::GameStateHelpMenu const&) -> ftxui::Component {
   using ftxui::Renderer;
   using ftxui::Element;
   return Renderer([]() -> Element {
-    return ftxui::text("Active game placeholder");
+    return ftxui::text("Help menu placeholder");
   });
 }
 

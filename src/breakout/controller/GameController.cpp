@@ -14,7 +14,7 @@ GameController::GameController() : mp_state{std::make_shared<model::GameState>()
   m_visitor = {
     [this](model::GameStateMainMenu const& state)  -> bool { return handle_main_menu_events(state); },
     [this](model::GameStatePauseMenu const& state) -> bool { return handle_pause_menu_events(state); },
-    [this](model::GameStateStarting const& state)  -> bool { return handle_game_starting_events(state); },
+    [this](model::GameStateHelpMenu const& state)  -> bool { return handle_help_menu_events(state); },
     [this](model::GameStateActive const& state)    -> bool { return handle_game_active_events(state); },
   };
 }
@@ -23,7 +23,7 @@ auto GameController::handle_event(ftxui::Event e) -> bool {
   std::visit(utils::Visitor{
     [e](model::GameStateMainMenu &state)  -> void { state.set_last_event(e); },
     [e](model::GameStatePauseMenu &state) -> void { state.set_last_event(e); },
-    [e](model::GameStateStarting &state)  -> void { state.set_last_event(e); },
+    [e](model::GameStateHelpMenu &state)  -> void { state.set_last_event(e); },
     [e](model::GameStateActive &state)    -> void { state.set_last_event(e); },
   }, *mp_state);
 
@@ -35,7 +35,7 @@ auto GameController::handle_main_menu_events(model::GameStateMainMenu const& sta
   if (last_event == view::Event::QuitButton) {
     m_view.exit_main_loop();
   } else if (last_event == view::Event::MainMenuPlayButton) {
-    *mp_state = model::GameStateStarting{};
+    *mp_state = model::GameStateActive{};
     m_view.render();
   } else {
     return false;
@@ -49,7 +49,7 @@ auto GameController::handle_pause_menu_events(model::GameStatePauseMenu const&) 
   return true;
 }
 
-auto GameController::handle_game_starting_events(model::GameStateStarting const&) -> bool {
+auto GameController::handle_help_menu_events(model::GameStateHelpMenu const&) -> bool {
 
   return true;
 }

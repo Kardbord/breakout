@@ -51,15 +51,15 @@ public:
 protected:
 };
 
-class GameStateStarting : public GameStateBase {
+class GameStateHelpMenu : public GameStateBase {
 public:
-  GameStateStarting() = default;
-  ~GameStateStarting() = default;
+  GameStateHelpMenu() = default;
+  ~GameStateHelpMenu() = default;
 
-  GameStateStarting(const GameStateStarting&) = default;
-  GameStateStarting& operator=(const GameStateStarting&) = default;
-  GameStateStarting(GameStateStarting&&) = default;
-  GameStateStarting& operator=(GameStateStarting&&) = default;
+  GameStateHelpMenu(const GameStateHelpMenu&) = default;
+  GameStateHelpMenu& operator=(const GameStateHelpMenu&) = default;
+  GameStateHelpMenu(GameStateHelpMenu&&) = default;
+  GameStateHelpMenu& operator=(GameStateHelpMenu&&) = default;
 
 protected:
 };
@@ -81,7 +81,7 @@ protected:
 // first alternative is initialized by default.
 using GameState = std::variant<model::GameStateMainMenu,
 /**/                           model::GameStatePauseMenu,
-/**/                           model::GameStateStarting,
+/**/                           model::GameStateHelpMenu,
 /**/                           model::GameStateActive>;
 
 } // namespace breakout::model
