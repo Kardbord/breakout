@@ -1,4 +1,5 @@
 #include <breakout/utils/Visitor.hpp>
+#include <breakout/model/GameState.hpp>
 #include <breakout/view/GameView.hpp>
 #include <ftxui/component/component.hpp>
 #include <ftxui/component/component_base.hpp>
@@ -12,23 +13,9 @@
 
 namespace breakout::view {
 
-constexpr uint32_t BRICKS_PER_ROW = 14;
-constexpr uint32_t ROWS_OF_BRICKS = 8;
-
-constexpr uint32_t BRICK_WIDTH  = 10;
-constexpr uint32_t BRICK_HEIGHT = 2;
-
-constexpr uint32_t PADDLE_WIDTH  = BRICK_WIDTH * 2;
-constexpr uint32_t PADDLE_HEIGHT = 2;
-
-constexpr uint32_t EMPTY_ROWS = ROWS_OF_BRICKS * BRICK_HEIGHT * 3;
-
-constexpr uint32_t CANVAS_WIDTH  = BRICK_WIDTH * BRICKS_PER_ROW;
-constexpr uint32_t CANVAS_HEIGHT = EMPTY_ROWS + (ROWS_OF_BRICKS * BRICK_HEIGHT);
-
 // The program will not render correctly below these dimensions.
-constexpr uint32_t MIN_TERM_WIDTH  = CANVAS_WIDTH;
-constexpr uint32_t MIN_TERM_HEIGHT = CANVAS_HEIGHT;
+constexpr uint32_t MIN_TERM_WIDTH  = ::breakout::model::GameStateActive::GAME_BOARD_WIDTH;
+constexpr uint32_t MIN_TERM_HEIGHT = ::breakout::model::GameStateActive::GAME_BOARD_HEIGHT;
 
 
 auto get_term_width() -> uint32_t {
@@ -147,15 +134,17 @@ auto GameView::build_pause_menu(model::GameStatePauseMenu const&) -> ftxui::Comp
 
 auto GameView::build_game_active(model::GameStateActive const&) -> ftxui::Component {
   using namespace::ftxui;
+  using GSA = ::breakout::model::GameStateActive;
+
 
   return Renderer([]() -> Element {
 
     auto draw_brick_row = [=](Canvas& canvas, int start_x, int start_y, Color c) -> void {
-      for (uint32_t i = 0; i < CANVAS_WIDTH; ++i) {
-        uint32_t x_offset = i * BRICK_WIDTH;
-        for (uint32_t y = 0; y < BRICK_HEIGHT; ++y) {
-          for (uint32_t x = 0; x < BRICK_WIDTH; ++x) {
-            bool is_block_end = (x == 0 || x == BRICK_WIDTH - 1);
+      for (uint32_t i = 0; i < GSA::GAME_BOARD_WIDTH; ++i) {
+        uint32_t x_offset = i * GSA::BRICK_WIDTH;
+        for (uint32_t y = 0; y < GSA::BRICK_HEIGHT; ++y) {
+          for (uint32_t x = 0; x < GSA::BRICK_WIDTH; ++x) {
+            bool is_block_end = (x == 0 || x == GSA::BRICK_WIDTH - 1);
             canvas.DrawBlock(start_x + x_offset + x, start_y + y, true, [is_block_end, c](Pixel &p) -> void {
               if (is_block_end) {
                 p.foreground_color = Color::Black;
@@ -170,33 +159,33 @@ auto GameView::build_game_active(model::GameStateActive const&) -> ftxui::Compon
     };
 
     auto draw_ball = [=](Canvas& canvas, Color color) {
-      const auto center_x = CANVAS_WIDTH / 2;
-      const auto center_y = CANVAS_HEIGHT / 2;
+      const auto center_x = GSA::GAME_BOARD_WIDTH / 2;
+      const auto center_y = GSA::GAME_BOARD_HEIGHT / 2;
       canvas.DrawBlock(center_x, center_y, true, color);
     };
 
     auto draw_paddle = [=](Canvas& canvas, int start_x, int start_y, Color color) -> void {
-      for (uint32_t y = 0; y < PADDLE_HEIGHT; ++y) {
-        for (uint32_t x = 0; x < PADDLE_WIDTH; ++x) {
+      for (uint32_t y = 0; y < GSA::PADDLE_HEIGHT; ++y) {
+        for (uint32_t x = 0; x < GSA::PADDLE_WIDTH; ++x) {
           canvas.DrawBlock(start_x + x, start_y + y, true, color);
         }
       }
     };
 
-    Canvas canvas(CANVAS_WIDTH, CANVAS_HEIGHT);
+    Canvas canvas(GSA::GAME_BOARD_WIDTH, GSA::GAME_BOARD_HEIGHT);
     draw_brick_row(canvas, 0, 0,                Color::Red);
-    draw_brick_row(canvas, 0, BRICK_HEIGHT,     Color::Red);
-    draw_brick_row(canvas, 0, BRICK_HEIGHT * 2, Color::DarkOrange);
-    draw_brick_row(canvas, 0, BRICK_HEIGHT * 3, Color::DarkOrange);
-    draw_brick_row(canvas, 0, BRICK_HEIGHT * 4, Color::Green);
-    draw_brick_row(canvas, 0, BRICK_HEIGHT * 5, Color::Green);
-    draw_brick_row(canvas, 0, BRICK_HEIGHT * 6, Color::Yellow);
-    draw_brick_row(canvas, 0, BRICK_HEIGHT * 7, Color::Yellow);
+    draw_brick_row(canvas, 0, GSA::BRICK_HEIGHT,     Color::Red);
+    draw_brick_row(canvas, 0, GSA::BRICK_HEIGHT * 2, Color::DarkOrange);
+    draw_brick_row(canvas, 0, GSA::BRICK_HEIGHT * 3, Color::DarkOrange);
+    draw_brick_row(canvas, 0, GSA::BRICK_HEIGHT * 4, Color::Green);
+    draw_brick_row(canvas, 0, GSA::BRICK_HEIGHT * 5, Color::Green);
+    draw_brick_row(canvas, 0, GSA::BRICK_HEIGHT * 6, Color::Yellow);
+    draw_brick_row(canvas, 0, GSA::BRICK_HEIGHT * 7, Color::Yellow);
 
     draw_ball(canvas, Color::White);
 
-    int paddle_x_position = (CANVAS_WIDTH / 2) - (PADDLE_WIDTH / 2);
-    draw_paddle(canvas, paddle_x_position, CANVAS_HEIGHT - PADDLE_HEIGHT - 1, Color::White);
+    int paddle_x_position = (GSA::GAME_BOARD_WIDTH / 2) - (GSA::PADDLE_WIDTH / 2);
+    draw_paddle(canvas, paddle_x_position, GSA::GAME_BOARD_HEIGHT - GSA::PADDLE_HEIGHT - 1, Color::White);
 
     return ftxui::canvas(canvas) | border | center | border;
   });

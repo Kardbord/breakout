@@ -3,6 +3,7 @@
 
 #include <ftxui/component/event.hpp>
 #include <variant>
+#include <cinttypes>
 
 namespace breakout::model {
 
@@ -66,6 +67,25 @@ protected:
 
 class GameStateActive : public GameStateBase {
 public:
+
+  static inline constexpr uint32_t BRICKS_PER_ROW = 14;
+  static inline constexpr uint32_t ROWS_OF_BRICKS = 8;
+
+  // Amount of space taken on the board by a brick.
+  static inline constexpr uint32_t BRICK_WIDTH  = 10;
+  static inline constexpr uint32_t BRICK_HEIGHT = 2;
+
+  // Amount of space taken on the board by the paddle
+  static inline constexpr uint32_t PADDLE_WIDTH  = BRICK_WIDTH * 2;
+  static inline constexpr uint32_t PADDLE_HEIGHT = 2;
+
+  // Amount of white space between the bricks and the paddle
+  static inline constexpr uint32_t EMPTY_ROWS = ROWS_OF_BRICKS * BRICK_HEIGHT * 3;
+
+  // Total game board dimensions.
+  static inline constexpr uint32_t GAME_BOARD_WIDTH  = BRICK_WIDTH * BRICKS_PER_ROW;
+  static inline constexpr uint32_t GAME_BOARD_HEIGHT = EMPTY_ROWS + (ROWS_OF_BRICKS * BRICK_HEIGHT);
+
   GameStateActive() = default;
   ~GameStateActive() = default;
 
