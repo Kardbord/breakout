@@ -8,30 +8,16 @@
 #include <ftxui/dom/elements.hpp>
 #include <ftxui/screen/screen.hpp>
 #include <memory>
-#include <stdexcept>
 #include <string>
 
 namespace breakout::view {
 
-// The program will not render correctly below these dimensions.
-constexpr uint32_t MIN_TERM_WIDTH  = ::breakout::model::GameStateActive::GAME_BOARD_WIDTH;
-constexpr uint32_t MIN_TERM_HEIGHT = ::breakout::model::GameStateActive::GAME_BOARD_HEIGHT;
-
-
-auto get_term_width() -> uint32_t {
-  const uint32_t width = ftxui::Terminal::Size().dimx;
-  if (width < MIN_TERM_WIDTH) {
-    throw std::runtime_error{"Terminal size must be at least " + std::to_string(MIN_TERM_WIDTH) + "x" + std::to_string(MIN_TERM_HEIGHT)};
-  }
-  return width;
+auto get_term_width() -> int {
+  return ftxui::Terminal::Size().dimx;
 }
 
-auto get_term_height() -> uint32_t {
-  const uint32_t height = ftxui::Terminal::Size().dimy;
-  if (height < MIN_TERM_HEIGHT) {
-    throw std::runtime_error{"Terminal size must be at least " + std::to_string(MIN_TERM_WIDTH) + "x" + std::to_string(MIN_TERM_HEIGHT)};
-  }
-  return height;
+auto get_term_height() -> int {
+  return ftxui::Terminal::Size().dimy;
 }
 
 auto get_title_art() -> ftxui::Element {
@@ -46,6 +32,20 @@ auto get_title_art() -> ftxui::Element {
     text(R"(                                                )") | color(Color::Yellow),
     text(R"(                                                )"),
   }) | borderRounded | color(Color::Cyan);
+}
+
+// Verify that we have space to display the requested element.
+// If yes, return that element.
+// If no, return a simple element telling the user to resize their terminal.
+auto verify_screen_requirement(ftxui::Element p_element) -> ftxui::Element {
+  p_element->ComputeRequirement();
+  auto requirement = p_element->requirement();
+
+  if (get_term_width() < requirement.min_x || get_term_height() < requirement.min_y) {
+    return ftxui::paragraph("Your terminal is too small to properly render the game. Please resize it. :)");
+  }
+
+  return p_element;
 }
 
 auto get_help_text() -> ftxui::Element {
@@ -115,12 +115,13 @@ auto GameView::build_main_menu(model::GameStateMainMenu const&) -> ftxui::Compon
     config.align_content = FlexboxConfig::AlignContent::Center;
     config.SetGap(0, 1);
 
-    return flexbox({
+    auto p_element = flexbox({
       get_title_art(),
       p_play_button->Render(),
       p_help_button->Render(),
       p_quit_button->Render(),
     }, config) | border;
+    return verify_screen_requirement(p_element);
   });
 }
 
@@ -128,7 +129,7 @@ auto GameView::build_pause_menu(model::GameStatePauseMenu const&) -> ftxui::Comp
   using ftxui::Renderer;
   using ftxui::Element;
   return Renderer([]() -> Element {
-    return ftxui::text("Pause menu placeholder");
+    return verify_screen_requirement(ftxui::text("Pause menu placeholder"));
   });
 }
 
@@ -196,10 +197,11 @@ auto GameView::build_game_active(model::GameStateActive const&) -> ftxui::Compon
     config.align_content = FlexboxConfig::AlignContent::Center;
     config.SetGap(0, 1);
 
-    return flexbox({
+    auto p_element = flexbox({
       get_title_art(),
-      ftxui::canvas(canvas) | border | center | border,
+      ftxui::canvas(canvas) | border | center,
     }, config) | border;
+    return verify_screen_requirement(p_element);
   });
 }
 
@@ -221,11 +223,12 @@ auto GameView::build_help_menu(model::GameStateHelpMenu const&) -> ftxui::Compon
     config.align_content = FlexboxConfig::AlignContent::Center;
     config.SetGap(0, 1);
 
-    return flexbox({
+    auto p_element = flexbox({
       get_title_art(),
       p_main_menu_button->Render(),
       get_help_text(),
     }, config) | border;
+    return verify_screen_requirement(p_element);
   });
 }
 
