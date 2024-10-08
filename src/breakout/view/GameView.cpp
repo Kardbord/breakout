@@ -17,9 +17,9 @@ constexpr int MIN_TERM_HEIGHT = 24;
 
 // The program may not render correctly if dimensions
 // are calculated to be below these thresholds.
-constexpr uint32_t MIN_BRICK_WIDTH   = 2;
-constexpr uint32_t MIN_BRICK_HEIGHT  = 2;
-constexpr uint32_t MIN_PADDLE_WIDTH  = 2;
+constexpr uint32_t MIN_BRICK_WIDTH   = 1;
+constexpr uint32_t MIN_BRICK_HEIGHT  = 1;
+constexpr uint32_t MIN_PADDLE_WIDTH  = 1;
 constexpr uint32_t MIN_PADDLE_HEIGHT = MIN_BRICK_HEIGHT;
 
 constexpr uint32_t BRICKS_PER_ROW = 14;
@@ -42,7 +42,8 @@ auto get_term_height() -> uint32_t {
 }
 
 auto get_brick_width() -> uint32_t {
-  const auto width = get_term_width() / BRICKS_PER_ROW;
+  uint32_t width = get_term_width() / BRICKS_PER_ROW;
+  width = width == 0 ? 1 : width;
   if (width < MIN_BRICK_WIDTH) {
     throw std::runtime_error{"Calculated brick width is smaller than minimum required: " + std::to_string(width) + " < " + std::to_string(MIN_BRICK_WIDTH)};
   }
@@ -52,7 +53,8 @@ auto get_brick_width() -> uint32_t {
 auto get_brick_height() -> uint32_t {
   // Bricks should take up about 25% of the screen, so each brick
   // should take up (25% of screen) / (rows of bricks).
-  const auto height = get_term_height() / 4 / ROWS_OF_BRICKS;
+  uint32_t height = get_term_height() / 4 / ROWS_OF_BRICKS;
+  height = height == 0 ? 1 : height;
   if (height < MIN_BRICK_HEIGHT) {
     throw std::runtime_error{"Calculated brick height is smaller than minimum required: " + std::to_string(height) + " < " + std::to_string(MIN_BRICK_HEIGHT)};
   }
@@ -60,8 +62,9 @@ auto get_brick_height() -> uint32_t {
 }
 
 auto get_paddle_width() -> uint32_t {
-  // Paddle should be about 20% of the screen
-  const auto width = get_term_width() / 5;
+  // Paddle should be about 10% of the screen
+  uint32_t width = get_term_width() / 10;
+  width = width == 0 ? 1 : width;
   if (width < MIN_PADDLE_WIDTH) {
     throw std::runtime_error{"Calculated paddle width is smaller than minimum required: " + std::to_string(width) + " < " + std::to_string(MIN_PADDLE_WIDTH)};
   }
@@ -72,6 +75,7 @@ auto get_paddle_height() -> uint32_t {
   uint32_t height;
   try {
     height = get_brick_height();
+    height = height == 0 ? 1 : height;
   } catch (std::runtime_error const &e) {
     throw std::runtime_error{"Paddle height is smaller than minimum allowed brick size -> " + std::string{e.what()}};
   }
@@ -91,9 +95,8 @@ auto get_canvas_width() -> uint32_t {
 }
 
 auto get_canvas_height() -> uint32_t {
-  return  (get_brick_height() * ROWS_OF_BRICKS) + get_paddle_height() + get_num_empty_rows();
+  return (get_brick_height() * ROWS_OF_BRICKS) + get_paddle_height() + get_num_empty_rows();
 }
-
 
 GameView::GameView(std::weak_ptr<const model::GameState> const p_state, EventHandler const& event_handler) : mp_state{std::move(p_state)}, m_event_handler{event_handler} {
   m_visitor = {
@@ -183,15 +186,29 @@ auto GameView::build_game_starting(model::GameStateStarting const&) -> ftxui::Co
     const auto canvas_width  = get_canvas_width();
     const auto canvas_height = get_canvas_height();
 
-    auto draw_brick_row = [=](Canvas& canvas, int start_x, int start_y, Color color) -> void {
+    auto draw_brick_row = [=](Canvas& canvas, int start_x, int start_y, Color c) -> void {
       for (uint32_t i = 0; i < canvas_width; ++i) {
-        int x_offset = i * brick_width;
+        uint32_t x_offset = i * brick_width;
         for (uint32_t y = 0; y < brick_height; ++y) {
           for (uint32_t x = 0; x < brick_width; ++x) {
-            canvas.DrawBlock(start_x + x_offset + x, start_y + y, true, color);
+            bool is_block_end = (x == 0 || x == brick_width - 1);
+            canvas.DrawBlock(start_x + x_offset + x, start_y + y, true, [is_block_end, c](Pixel &p) -> void {
+              if (is_block_end) {
+                p.foreground_color = Color::Black;
+              } else {
+                p.foreground_color = c;
+              }
+              p.dim = is_block_end;
+            });
           }
         }
       }
+    };
+
+    auto draw_ball = [=](Canvas& canvas, Color color) {
+      const auto center_x = canvas_width / 2;
+      const auto center_y = canvas_height / 2;
+      canvas.DrawBlock(center_x, center_y, true, color);
     };
 
     auto draw_paddle = [=](Canvas& canvas, int start_x, int start_y, Color color) -> void {
@@ -212,17 +229,11 @@ auto GameView::build_game_starting(model::GameStateStarting const&) -> ftxui::Co
     draw_brick_row(canvas, 0, brick_height * 6, Color::Yellow);
     draw_brick_row(canvas, 0, brick_height * 7, Color::Yellow);
 
+    draw_ball(canvas, Color::White);
+
     int paddle_x_position = (canvas_width / 2) - (paddle_width / 2);
     draw_paddle(canvas, paddle_x_position, canvas_height - paddle_height - 1, Color::White);
-    return hbox({
-      filler(),
-      vbox({
-        filler(),
-        ftxui::canvas(canvas) | border,
-        filler(),
-      }),
-      filler(),
-    }) | border;
+    return ftxui::canvas(canvas) | border | center;
   });
 }
 
