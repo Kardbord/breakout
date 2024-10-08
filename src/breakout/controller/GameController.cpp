@@ -37,6 +37,9 @@ auto GameController::handle_main_menu_events(model::GameStateMainMenu const& sta
   } else if (last_event == view::Event::MainMenuPlayButton) {
     *mp_state = model::GameStateActive{};
     m_view.render();
+  } else if (last_event == view::Event::HelpButton) {
+    *mp_state = model::GameStateHelpMenu{};
+    m_view.render();
   } else {
     return false;
   }
@@ -49,7 +52,14 @@ auto GameController::handle_pause_menu_events(model::GameStatePauseMenu const&) 
   return true;
 }
 
-auto GameController::handle_help_menu_events(model::GameStateHelpMenu const&) -> bool {
+auto GameController::handle_help_menu_events(model::GameStateHelpMenu const& state) -> bool {
+  auto const last_event = state.get_last_event();
+  if (last_event == view::Event::MainMenuButton) {
+    *mp_state = model::GameStateMainMenu{};
+    m_view.render();
+  } else {
+    return false;
+  }
 
   return true;
 }

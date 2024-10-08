@@ -1,6 +1,7 @@
 #include <breakout/utils/Visitor.hpp>
 #include <breakout/view/GameView.hpp>
 #include <ftxui/component/component.hpp>
+#include <ftxui/component/component_base.hpp>
 #include <ftxui/component/component_options.hpp>
 #include <ftxui/component/screen_interactive.hpp>
 #include <ftxui/dom/elements.hpp>
@@ -98,6 +99,33 @@ auto get_canvas_height() -> uint32_t {
   return (get_brick_height() * ROWS_OF_BRICKS) + get_paddle_height() + get_num_empty_rows();
 }
 
+auto get_title_art() -> ftxui::Element {
+  using namespace ftxui;
+  return vbox({
+    text(R"(                                                )"),
+    text(R"(    ____                 _               _      )") | color(Color::Red),
+    text(R"(   | __ ) _ __ ___  __ _| | _____  _   _| |_    )") | color(Color::Red),
+    text(R"(   |  _ \| '__/ _ \/ _` | |/ / _ \| | | | __|   )") | color(Color::DarkOrange),
+    text(R"(   | |_) | | |  __/ (_| |   < (_) | |_| | |_    )") | color(Color::Green),
+    text(R"(   |____/|_|  \___|\__,_|_|\_\___/ \__,_|\__|   )") | color(Color::Yellow),
+    text(R"(                                                )") | color(Color::Yellow),
+    text(R"(                                                )"),
+  }) | borderRounded | color(Color::Cyan);
+}
+
+auto get_help_text() -> ftxui::Element {
+  using namespace ftxui;
+  return vbox({
+    text("Controls") | center,
+    text(""),
+    text("Move the paddle with a/d, h/l, or left/right"),
+    text(""),
+    text("Pause the game with Esc"),
+    text(""),
+    text("Quit the game at any time with Ctrl+c"),
+  });
+}
+
 GameView::GameView(std::weak_ptr<const model::GameState> const p_state, EventHandler const& event_handler) : mp_state{std::move(p_state)}, m_event_handler{event_handler} {
   m_visitor = {
     [this](model::GameStateMainMenu const& state)  -> ftxui::Component { return build_main_menu(state); },
@@ -119,8 +147,8 @@ auto GameView::render() -> void {
   }
 
   renderer | ftxui::CatchEvent([&](ftxui::Event event) -> bool { return m_event_handler(event); });
-  auto screen = ftxui::ScreenInteractive::Fullscreen();
   exit_main_loop();
+  auto screen = ftxui::ScreenInteractive::Fullscreen();
   m_exit_closure = screen.ExitLoopClosure();
   screen.Loop(renderer);
 }
@@ -143,7 +171,7 @@ auto GameView::build_main_menu(model::GameStateMainMenu const&) -> ftxui::Compon
   });
 
   // Need to capture these by value so that the references don't go out of scope.
-  return Renderer(p_container, [p_container, p_play_button, p_help_button, p_quit_button]() -> Element {
+  return Renderer(p_container, [=]() -> Element {
     FlexboxConfig config;
     config.direction = FlexboxConfig::Direction::Column;
     config.wrap = FlexboxConfig::Wrap::NoWrap;
@@ -153,16 +181,7 @@ auto GameView::build_main_menu(model::GameStateMainMenu const&) -> ftxui::Compon
     config.SetGap(0, 1);
 
     return flexbox({
-      vbox({
-        text(R"(                                                )"),
-        text(R"(    ____                 _               _      )") | color(Color::Red),
-        text(R"(   | __ ) _ __ ___  __ _| | _____  _   _| |_    )") | color(Color::Red),
-        text(R"(   |  _ \| '__/ _ \/ _` | |/ / _ \| | | | __|   )") | color(Color::DarkOrange),
-        text(R"(   | |_) | | |  __/ (_| |   < (_) | |_| | |_    )") | color(Color::Green),
-        text(R"(   |____/|_|  \___|\__,_|_|\_\___/ \__,_|\__|   )") | color(Color::Yellow),
-        text(R"(                                                )") | color(Color::Yellow),
-        text(R"(                                                )"),
-      }) | borderRounded | color(Color::Cyan),
+      get_title_art(),
       p_play_button->Render(),
       p_help_button->Render(),
       p_quit_button->Render(),
@@ -242,10 +261,28 @@ auto GameView::build_game_active(model::GameStateActive const&) -> ftxui::Compon
 }
 
 auto GameView::build_help_menu(model::GameStateHelpMenu const&) -> ftxui::Component {
-  using ftxui::Renderer;
-  using ftxui::Element;
-  return Renderer([]() -> Element {
-    return ftxui::text("Help menu placeholder");
+  using namespace ftxui;
+
+  auto p_main_menu_button = Button("  Main Menu  ", [this]() -> void { (void)m_event_handler(Event::MainMenuButton); }, ButtonOption::Simple());
+
+  auto p_container = Container::Vertical({
+    p_main_menu_button,
+  });
+
+  return Renderer(p_container, [=]() -> Element {
+    FlexboxConfig config;
+    config.direction = FlexboxConfig::Direction::Column;
+    config.wrap = FlexboxConfig::Wrap::NoWrap;
+    config.justify_content = FlexboxConfig::JustifyContent::Center;
+    config.align_items = FlexboxConfig::AlignItems::Center;
+    config.align_content = FlexboxConfig::AlignContent::Center;
+    config.SetGap(0, 1);
+
+    return flexbox({
+      get_title_art(),
+      p_main_menu_button->Render(),
+      get_help_text(),
+    }, config) | border;
   });
 }
 
