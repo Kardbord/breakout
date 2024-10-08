@@ -72,15 +72,19 @@ public:
   static inline constexpr uint32_t ROWS_OF_BRICKS = 8;
 
   // Amount of space taken on the board by a brick.
-  static inline constexpr uint32_t BRICK_WIDTH  = 10;
+  static inline constexpr uint32_t BRICK_WIDTH  = 16;
   static inline constexpr uint32_t BRICK_HEIGHT = 2;
 
   // Amount of space taken on the board by the paddle
   static inline constexpr uint32_t PADDLE_WIDTH  = BRICK_WIDTH * 2;
   static inline constexpr uint32_t PADDLE_HEIGHT = 2;
 
-  // Amount of white space between the bricks and the paddle
-  static inline constexpr uint32_t EMPTY_ROWS = ROWS_OF_BRICKS * BRICK_HEIGHT * 3;
+  // Dimensions of the ball on the board
+  static inline constexpr uint32_t BALL_RADIUS = 1;
+
+  // The number of empty game board rows between the bricks and the paddle,
+  // including the row on which the paddle is drawn.
+  static inline constexpr uint32_t EMPTY_ROWS = ROWS_OF_BRICKS * BRICK_HEIGHT * 4;
 
   // Total game board dimensions.
   static inline constexpr uint32_t GAME_BOARD_WIDTH  = BRICK_WIDTH * BRICKS_PER_ROW;

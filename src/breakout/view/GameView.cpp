@@ -158,10 +158,8 @@ auto GameView::build_game_active(model::GameStateActive const&) -> ftxui::Compon
       }
     };
 
-    auto draw_ball = [=](Canvas& canvas, Color color) {
-      const auto center_x = GSA::GAME_BOARD_WIDTH / 2;
-      const auto center_y = GSA::GAME_BOARD_HEIGHT / 2;
-      canvas.DrawBlock(center_x, center_y, true, color);
+    auto draw_ball = [=](Canvas& canvas, int center_x, int center_y, Color color) {
+      canvas.DrawBlockCircleFilled(center_x, center_y, GSA::BALL_RADIUS, color);
     };
 
     auto draw_paddle = [=](Canvas& canvas, int start_x, int start_y, Color color) -> void {
@@ -182,12 +180,26 @@ auto GameView::build_game_active(model::GameStateActive const&) -> ftxui::Compon
     draw_brick_row(canvas, 0, GSA::BRICK_HEIGHT * 6, Color::Yellow);
     draw_brick_row(canvas, 0, GSA::BRICK_HEIGHT * 7, Color::Yellow);
 
-    draw_ball(canvas, Color::White);
+
+    const auto center_x = GSA::GAME_BOARD_WIDTH / 2;
+    const auto center_y = GSA::GAME_BOARD_HEIGHT / 2;
+    draw_ball(canvas, center_x, center_y, Color::White);
 
     int paddle_x_position = (GSA::GAME_BOARD_WIDTH / 2) - (GSA::PADDLE_WIDTH / 2);
     draw_paddle(canvas, paddle_x_position, GSA::GAME_BOARD_HEIGHT - GSA::PADDLE_HEIGHT - 1, Color::White);
 
-    return ftxui::canvas(canvas) | border | center | border;
+    FlexboxConfig config;
+    config.direction = FlexboxConfig::Direction::Column;
+    config.wrap = FlexboxConfig::Wrap::NoWrap;
+    config.justify_content = FlexboxConfig::JustifyContent::Center;
+    config.align_items = FlexboxConfig::AlignItems::Center;
+    config.align_content = FlexboxConfig::AlignContent::Center;
+    config.SetGap(0, 1);
+
+    return flexbox({
+      get_title_art(),
+      ftxui::canvas(canvas) | border | center | border,
+    }, config) | border;
   });
 }
 
