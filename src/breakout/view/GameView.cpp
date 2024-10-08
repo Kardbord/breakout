@@ -12,22 +12,27 @@
 
 namespace breakout::view {
 
-// These are the default dimensions of most terminal emulators.
-constexpr int MIN_TERM_WIDTH  = 80;
-constexpr int MIN_TERM_HEIGHT = 24;
-
-// The program may not render correctly if dimensions
-// are calculated to be below these thresholds.
-constexpr uint32_t MIN_BRICK_WIDTH   = 1;
-constexpr uint32_t MIN_BRICK_HEIGHT  = 1;
-constexpr uint32_t MIN_PADDLE_WIDTH  = 1;
-constexpr uint32_t MIN_PADDLE_HEIGHT = MIN_BRICK_HEIGHT;
-
 constexpr uint32_t BRICKS_PER_ROW = 14;
 constexpr uint32_t ROWS_OF_BRICKS = 8;
 
+constexpr uint32_t BRICK_WIDTH  = 10;
+constexpr uint32_t BRICK_HEIGHT = 2;
+
+constexpr uint32_t PADDLE_WIDTH  = BRICK_WIDTH * 2;
+constexpr uint32_t PADDLE_HEIGHT = 2;
+
+constexpr uint32_t EMPTY_ROWS = ROWS_OF_BRICKS * BRICK_HEIGHT * 3;
+
+constexpr uint32_t CANVAS_WIDTH  = BRICK_WIDTH * BRICKS_PER_ROW;
+constexpr uint32_t CANVAS_HEIGHT = EMPTY_ROWS + (ROWS_OF_BRICKS * BRICK_HEIGHT);
+
+// The program will not render correctly below these dimensions.
+constexpr uint32_t MIN_TERM_WIDTH  = CANVAS_WIDTH;
+constexpr uint32_t MIN_TERM_HEIGHT = CANVAS_HEIGHT;
+
+
 auto get_term_width() -> uint32_t {
-  const auto width = ftxui::Terminal::Size().dimx;
+  const uint32_t width = ftxui::Terminal::Size().dimx;
   if (width < MIN_TERM_WIDTH) {
     throw std::runtime_error{"Terminal size must be at least " + std::to_string(MIN_TERM_WIDTH) + "x" + std::to_string(MIN_TERM_HEIGHT)};
   }
@@ -35,68 +40,11 @@ auto get_term_width() -> uint32_t {
 }
 
 auto get_term_height() -> uint32_t {
-  const auto height = ftxui::Terminal::Size().dimy;
+  const uint32_t height = ftxui::Terminal::Size().dimy;
   if (height < MIN_TERM_HEIGHT) {
     throw std::runtime_error{"Terminal size must be at least " + std::to_string(MIN_TERM_WIDTH) + "x" + std::to_string(MIN_TERM_HEIGHT)};
   }
   return height;
-}
-
-auto get_brick_width() -> uint32_t {
-  uint32_t width = get_term_width() / BRICKS_PER_ROW;
-  width = width == 0 ? 1 : width;
-  if (width < MIN_BRICK_WIDTH) {
-    throw std::runtime_error{"Calculated brick width is smaller than minimum required: " + std::to_string(width) + " < " + std::to_string(MIN_BRICK_WIDTH)};
-  }
-  return width;
-}
-
-auto get_brick_height() -> uint32_t {
-  // Bricks should take up about 25% of the screen, so each brick
-  // should take up (25% of screen) / (rows of bricks).
-  uint32_t height = get_term_height() / 4 / ROWS_OF_BRICKS;
-  height = height == 0 ? 1 : height;
-  if (height < MIN_BRICK_HEIGHT) {
-    throw std::runtime_error{"Calculated brick height is smaller than minimum required: " + std::to_string(height) + " < " + std::to_string(MIN_BRICK_HEIGHT)};
-  }
-  return height;
-}
-
-auto get_paddle_width() -> uint32_t {
-  // Paddle should be about 10% of the screen
-  uint32_t width = get_term_width() / 10;
-  width = width == 0 ? 1 : width;
-  if (width < MIN_PADDLE_WIDTH) {
-    throw std::runtime_error{"Calculated paddle width is smaller than minimum required: " + std::to_string(width) + " < " + std::to_string(MIN_PADDLE_WIDTH)};
-  }
-  return width;
-}
-
-auto get_paddle_height() -> uint32_t {
-  uint32_t height;
-  try {
-    height = get_brick_height();
-    height = height == 0 ? 1 : height;
-  } catch (std::runtime_error const &e) {
-    throw std::runtime_error{"Paddle height is smaller than minimum allowed brick size -> " + std::string{e.what()}};
-  }
-
-  if (height < MIN_PADDLE_HEIGHT) {
-    throw std::runtime_error{"Calculated paddle height is smaller than minimum required: " + std::to_string(height) + " < " + std::to_string(MIN_PADDLE_HEIGHT)};
-  }
-  return height;
-}
-
-auto get_num_empty_rows() -> uint32_t {
-  return get_term_height() - (ROWS_OF_BRICKS * get_brick_height()) - get_paddle_height();
-}
-
-auto get_canvas_width() -> uint32_t {
-  return get_brick_width() * BRICKS_PER_ROW;
-}
-
-auto get_canvas_height() -> uint32_t {
-  return (get_brick_height() * ROWS_OF_BRICKS) + get_paddle_height() + get_num_empty_rows();
 }
 
 auto get_title_art() -> ftxui::Element {
@@ -201,19 +149,13 @@ auto GameView::build_game_active(model::GameStateActive const&) -> ftxui::Compon
   using namespace::ftxui;
 
   return Renderer([]() -> Element {
-    const auto brick_width   = get_brick_width();
-    const auto brick_height  = get_brick_height();
-    const auto paddle_width  = get_paddle_width();
-    const auto paddle_height = get_paddle_height();
-    const auto canvas_width  = get_canvas_width();
-    const auto canvas_height = get_canvas_height();
 
     auto draw_brick_row = [=](Canvas& canvas, int start_x, int start_y, Color c) -> void {
-      for (uint32_t i = 0; i < canvas_width; ++i) {
-        uint32_t x_offset = i * brick_width;
-        for (uint32_t y = 0; y < brick_height; ++y) {
-          for (uint32_t x = 0; x < brick_width; ++x) {
-            bool is_block_end = (x == 0 || x == brick_width - 1);
+      for (uint32_t i = 0; i < CANVAS_WIDTH; ++i) {
+        uint32_t x_offset = i * BRICK_WIDTH;
+        for (uint32_t y = 0; y < BRICK_HEIGHT; ++y) {
+          for (uint32_t x = 0; x < BRICK_WIDTH; ++x) {
+            bool is_block_end = (x == 0 || x == BRICK_WIDTH - 1);
             canvas.DrawBlock(start_x + x_offset + x, start_y + y, true, [is_block_end, c](Pixel &p) -> void {
               if (is_block_end) {
                 p.foreground_color = Color::Black;
@@ -228,33 +170,33 @@ auto GameView::build_game_active(model::GameStateActive const&) -> ftxui::Compon
     };
 
     auto draw_ball = [=](Canvas& canvas, Color color) {
-      const auto center_x = canvas_width / 2;
-      const auto center_y = canvas_height / 2;
+      const auto center_x = CANVAS_WIDTH / 2;
+      const auto center_y = CANVAS_HEIGHT / 2;
       canvas.DrawBlock(center_x, center_y, true, color);
     };
 
     auto draw_paddle = [=](Canvas& canvas, int start_x, int start_y, Color color) -> void {
-      for (uint32_t y = 0; y < paddle_height; ++y) {
-        for (uint32_t x = 0; x < paddle_width; ++x) {
+      for (uint32_t y = 0; y < PADDLE_HEIGHT; ++y) {
+        for (uint32_t x = 0; x < PADDLE_WIDTH; ++x) {
           canvas.DrawBlock(start_x + x, start_y + y, true, color);
         }
       }
     };
 
-    Canvas canvas(canvas_width, canvas_height);
+    Canvas canvas(CANVAS_WIDTH, CANVAS_HEIGHT);
     draw_brick_row(canvas, 0, 0,                Color::Red);
-    draw_brick_row(canvas, 0, brick_height,     Color::Red);
-    draw_brick_row(canvas, 0, brick_height * 2, Color::DarkOrange);
-    draw_brick_row(canvas, 0, brick_height * 3, Color::DarkOrange);
-    draw_brick_row(canvas, 0, brick_height * 4, Color::Green);
-    draw_brick_row(canvas, 0, brick_height * 5, Color::Green);
-    draw_brick_row(canvas, 0, brick_height * 6, Color::Yellow);
-    draw_brick_row(canvas, 0, brick_height * 7, Color::Yellow);
+    draw_brick_row(canvas, 0, BRICK_HEIGHT,     Color::Red);
+    draw_brick_row(canvas, 0, BRICK_HEIGHT * 2, Color::DarkOrange);
+    draw_brick_row(canvas, 0, BRICK_HEIGHT * 3, Color::DarkOrange);
+    draw_brick_row(canvas, 0, BRICK_HEIGHT * 4, Color::Green);
+    draw_brick_row(canvas, 0, BRICK_HEIGHT * 5, Color::Green);
+    draw_brick_row(canvas, 0, BRICK_HEIGHT * 6, Color::Yellow);
+    draw_brick_row(canvas, 0, BRICK_HEIGHT * 7, Color::Yellow);
 
     draw_ball(canvas, Color::White);
 
-    int paddle_x_position = (canvas_width / 2) - (paddle_width / 2);
-    draw_paddle(canvas, paddle_x_position, canvas_height - paddle_height - 1, Color::White);
+    int paddle_x_position = (CANVAS_WIDTH / 2) - (PADDLE_WIDTH / 2);
+    draw_paddle(canvas, paddle_x_position, CANVAS_HEIGHT - PADDLE_HEIGHT - 1, Color::White);
 
     return ftxui::canvas(canvas) | border | center | border;
   });
