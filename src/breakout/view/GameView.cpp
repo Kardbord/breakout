@@ -135,17 +135,17 @@ auto GameView::build_pause_menu(model::GameStatePauseMenu const&) -> ftxui::Comp
 
 auto GameView::build_game_active(model::GameStateActive const&) -> ftxui::Component {
   using namespace::ftxui;
-  using GSA = ::breakout::model::GameStateActive;
+  using GB = ::breakout::model::GameBoard;
 
 
   return Renderer([]() -> Element {
 
     auto draw_brick_row = [=](Canvas& canvas, int start_x, int start_y, Color c) -> void {
-      for (uint32_t i = 0; i < GSA::GAME_BOARD_WIDTH; ++i) {
-        uint32_t x_offset = i * GSA::BRICK_WIDTH;
-        for (uint32_t y = 0; y < GSA::BRICK_HEIGHT; ++y) {
-          for (uint32_t x = 0; x < GSA::BRICK_WIDTH; ++x) {
-            bool is_block_end = (x == 0 || x == GSA::BRICK_WIDTH - 1);
+      for (uint32_t i = 0; i < GB::BOARD_WIDTH; ++i) {
+        uint32_t x_offset = i * GB::BRICK_WIDTH;
+        for (uint32_t y = 0; y < GB::BRICK_HEIGHT; ++y) {
+          for (uint32_t x = 0; x < GB::BRICK_WIDTH; ++x) {
+            bool is_block_end = (x == 0 || x == GB::BRICK_WIDTH - 1);
             canvas.DrawBlock(start_x + x_offset + x, start_y + y, true, [is_block_end, c](Pixel &p) -> void {
               if (is_block_end) {
                 p.foreground_color = Color::Black;
@@ -159,35 +159,39 @@ auto GameView::build_game_active(model::GameStateActive const&) -> ftxui::Compon
       }
     };
 
-    auto draw_ball = [=](Canvas& canvas, int center_x, int center_y, Color color) {
-      canvas.DrawBlockCircleFilled(center_x, center_y, GSA::BALL_RADIUS, color);
-    };
-
-    auto draw_paddle = [=](Canvas& canvas, int start_x, int start_y, Color color) -> void {
-      for (uint32_t y = 0; y < GSA::PADDLE_HEIGHT; ++y) {
-        for (uint32_t x = 0; x < GSA::PADDLE_WIDTH; ++x) {
+    auto draw_ball = [=](Canvas& canvas, int start_x, int start_y, Color color) {
+      for (uint32_t y = 0; y < GB::BALL_HEIGHT; ++y) {
+        for (uint32_t x = 0; x < GB::BALL_WIDTH; ++x) {
           canvas.DrawBlock(start_x + x, start_y + y, true, color);
         }
       }
     };
 
-    Canvas canvas(GSA::GAME_BOARD_WIDTH, GSA::GAME_BOARD_HEIGHT);
+    auto draw_paddle = [=](Canvas& canvas, int start_x, int start_y, Color color) -> void {
+      for (uint32_t y = 0; y < GB::PADDLE_HEIGHT; ++y) {
+        for (uint32_t x = 0; x < GB::PADDLE_WIDTH; ++x) {
+          canvas.DrawBlock(start_x + x, start_y + y, true, color);
+        }
+      }
+    };
+
+    Canvas canvas(GB::BOARD_WIDTH, GB::BOARD_HEIGHT);
     draw_brick_row(canvas, 0, 0,                Color::Red);
-    draw_brick_row(canvas, 0, GSA::BRICK_HEIGHT,     Color::Red);
-    draw_brick_row(canvas, 0, GSA::BRICK_HEIGHT * 2, Color::DarkOrange);
-    draw_brick_row(canvas, 0, GSA::BRICK_HEIGHT * 3, Color::DarkOrange);
-    draw_brick_row(canvas, 0, GSA::BRICK_HEIGHT * 4, Color::Green);
-    draw_brick_row(canvas, 0, GSA::BRICK_HEIGHT * 5, Color::Green);
-    draw_brick_row(canvas, 0, GSA::BRICK_HEIGHT * 6, Color::Yellow);
-    draw_brick_row(canvas, 0, GSA::BRICK_HEIGHT * 7, Color::Yellow);
+    draw_brick_row(canvas, 0, GB::BRICK_HEIGHT,     Color::Red);
+    draw_brick_row(canvas, 0, GB::BRICK_HEIGHT * 2, Color::DarkOrange);
+    draw_brick_row(canvas, 0, GB::BRICK_HEIGHT * 3, Color::DarkOrange);
+    draw_brick_row(canvas, 0, GB::BRICK_HEIGHT * 4, Color::Green);
+    draw_brick_row(canvas, 0, GB::BRICK_HEIGHT * 5, Color::Green);
+    draw_brick_row(canvas, 0, GB::BRICK_HEIGHT * 6, Color::Yellow);
+    draw_brick_row(canvas, 0, GB::BRICK_HEIGHT * 7, Color::Yellow);
 
 
-    const auto center_x = GSA::GAME_BOARD_WIDTH / 2;
-    const auto center_y = GSA::GAME_BOARD_HEIGHT / 2;
-    draw_ball(canvas, center_x, center_y, Color::White);
+    const auto ball_x = (GB::BOARD_WIDTH / 2) - (GB::BALL_WIDTH / 2);
+    const auto ball_y = (GB::BOARD_HEIGHT / 2) - (GB::BALL_HEIGHT / 2);
+    draw_ball(canvas, ball_x, ball_y, Color::White);
 
-    int paddle_x_position = (GSA::GAME_BOARD_WIDTH / 2) - (GSA::PADDLE_WIDTH / 2);
-    draw_paddle(canvas, paddle_x_position, GSA::GAME_BOARD_HEIGHT - GSA::PADDLE_HEIGHT - 1, Color::White);
+    int paddle_x_position = (GB::BOARD_WIDTH / 2) - (GB::PADDLE_WIDTH / 2);
+    draw_paddle(canvas, paddle_x_position, GB::BOARD_HEIGHT - GB::PADDLE_HEIGHT - 1, Color::White);
 
     FlexboxConfig config;
     config.direction = FlexboxConfig::Direction::Column;

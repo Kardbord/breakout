@@ -10,6 +10,8 @@ include_directories(src)
 set("${CMAKE_PROJECT_NAME}_SRC"
   src/main.cpp
   src/breakout/model/GameState.cpp
+  src/breakout/model/GameBoard.cpp
+  src/breakout/model/GameBoardCell.cpp
   src/breakout/view/GameView.cpp
   src/breakout/controller/GameController.cpp
 )
