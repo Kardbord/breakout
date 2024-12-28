@@ -62,7 +62,7 @@ public:
 private:
 
   static inline constexpr uint32_t BRICK_START_IDX = 0;
-  static inline constexpr uint32_t BRICK_END_IDX   = (BOARD_WIDTH * ROWS_OF_BRICKS) - 1;
+  static inline constexpr uint32_t BRICK_END_IDX   = (BOARD_WIDTH * ROWS_OF_BRICKS * BRICK_HEIGHT) - 1;
 
   // Convert x/y coordinates to m_board index.
   auto coords_to_idx(uint32_t x, uint32_t y) const -> uint32_t;
