@@ -4,6 +4,7 @@
 #include <breakout/model/GameBoardCell.hpp>
 #include <cinttypes>
 #include <array>
+#include <functional>
 
 namespace breakout::model {
 
@@ -42,6 +43,21 @@ public:
   GameBoard& operator=(GameBoard&&) = default;
 
   auto reset_board() -> void;
+  
+  // Is this cell the beginning of a brick?
+  static auto is_brick_start(uint32_t idx) -> bool;
+
+  // Is this cell the end of a brick?
+  static auto is_brick_end(uint32_t idx) -> bool;
+
+  // Is this cell the start of a row?
+  static auto is_row_start(uint32_t idx) -> bool;
+
+  // Is this cell the end of a row?
+  static auto is_row_end(uint32_t idx) -> bool;
+
+  using CellFunctor = std::function<void(GameBoardCell const&)>;
+  auto for_each_cell(CellFunctor const &f) const -> void;
 
 private:
 
@@ -61,18 +77,12 @@ private:
   auto reset_ball() -> void;
   auto reset_paddle() -> void;
 
-  // Is this cell the beginning of a brick?
-  auto is_brick_start(uint32_t idx) const -> bool;
-
-  // Is this cell the end of a brick?
-  auto is_brick_end(uint32_t idx) const -> bool;
-
   std::array<GameBoardCell, BOARD_WIDTH * BOARD_HEIGHT> m_board;
 
-  // Current position of the paddle
+  // Current position of the first cell of the paddle
   uint32_t m_paddle_start_idx;
 
-  // Current position of the ball
+  // Current position of the first cell of the ball
   uint32_t m_ball_start_idx;
 
 };

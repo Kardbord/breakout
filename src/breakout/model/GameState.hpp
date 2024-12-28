@@ -76,6 +76,8 @@ public:
   GameStateActive(GameStateActive&&) = default;
   GameStateActive& operator=(GameStateActive&&) = default;
 
+  auto for_each_game_board_cell(GameBoard::CellFunctor const &f) const -> void;
+
 protected:
   GameBoard m_board;
 };

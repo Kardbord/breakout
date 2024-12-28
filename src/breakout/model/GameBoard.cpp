@@ -98,12 +98,27 @@ auto GameBoard::reset_paddle() -> void {
   move_paddle(paddle_x, paddle_y);
 }
 
-auto GameBoard::is_brick_start(uint32_t const idx) const -> bool {
+auto GameBoard::is_brick_start(uint32_t const idx) -> bool {
   return idx >= BRICK_START_IDX && idx <= BRICK_END_IDX && idx % BRICK_WIDTH == 0;
 }
 
-auto GameBoard::is_brick_end(uint32_t const idx) const -> bool {
+auto GameBoard::is_brick_end(uint32_t const idx) -> bool {
   return idx >= BRICK_START_IDX && idx <= BRICK_END_IDX && idx % (BRICK_WIDTH - 1) == 0;
 }
 
+// Is this cell the start of a row?
+auto GameBoard::is_row_start(uint32_t idx) -> bool {
+  return idx % (BOARD_WIDTH) == 0;
+}
+
+// Is this cell the end of a row?
+auto GameBoard::is_row_end(uint32_t idx) -> bool {
+  return idx % (BOARD_WIDTH - 1) == 0;
+}
+
+auto GameBoard::for_each_cell(CellFunctor const &f) const -> void {
+  for (auto const &cell: m_board){
+    f(cell);
+  }
+}
 } // namespace breakout::model

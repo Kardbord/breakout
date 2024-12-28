@@ -133,12 +133,17 @@ auto GameView::build_pause_menu(model::GameStatePauseMenu const&) -> ftxui::Comp
   });
 }
 
-auto GameView::build_game_active(model::GameStateActive const&) -> ftxui::Component {
+auto GameView::build_game_active(model::GameStateActive const &state) -> ftxui::Component {
   using namespace::ftxui;
-  using GB = ::breakout::model::GameBoard;
+  using GB  = ::breakout::model::GameBoard;
+  using GBC = ::breakout::model::GameBoardCell;
 
 
-  return Renderer([]() -> Element {
+  return Renderer([&state]() -> Element {
+
+    state.for_each_game_board_cell([](GBC const &cell) -> void {
+
+    });
 
     auto draw_brick_row = [=](Canvas& canvas, int start_x, int start_y, Color c) -> void {
       for (uint32_t i = 0; i < GB::BOARD_WIDTH; ++i) {

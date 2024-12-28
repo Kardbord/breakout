@@ -10,4 +10,9 @@ auto GameStateBase::get_last_event() const -> ftxui::Event {
   return m_last_event;
 }
 
+
+auto GameStateActive::for_each_game_board_cell(GameBoard::CellFunctor const &f) const -> void {
+  m_board.for_each_cell(f);
+}
+
 } // namespace breakout::model
