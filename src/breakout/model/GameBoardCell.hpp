@@ -19,10 +19,10 @@ public:
   };
 
   enum Property : uint32_t {
-    IS_BRICK_START = 1 << 0,
-    IS_BRICK_END   = 1 << 1,
-    IS_ROW_START   = 1 << 2,
-    IS_ROW_END     = 1 << 3,
+    BRICK_START = 1 << 0,
+    BRICK_END   = 1 << 1,
+    ROW_START   = 1 << 2,
+    ROW_END     = 1 << 3,
   };
 
   GameBoardCell() = default;
@@ -41,7 +41,7 @@ public:
   auto get_cell_value() const -> uint32_t;
 
   // Returns true if a cell possesses all of the provided properties
-  auto has_property(std::initializer_list<Property> const &properties) const -> bool;
+  auto has_properties(std::initializer_list<Property> const &properties) const -> bool;
 
 private:
 
