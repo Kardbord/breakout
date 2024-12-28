@@ -26,9 +26,9 @@ auto GameBoard::reset_board() -> void {
     m_board.at(i).add_properties({GameBoardCell::Property::ROW_END});
   }
 
-  reset_bricks();
   reset_ball();
   reset_paddle();
+  reset_bricks();
 }
 
 auto GameBoard::reset_bricks() -> void {
