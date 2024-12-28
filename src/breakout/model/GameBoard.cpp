@@ -129,7 +129,7 @@ auto GameBoard::is_row_start(uint32_t idx) -> bool {
 
 // Is this cell the end of a row?
 auto GameBoard::is_row_end(uint32_t idx) -> bool {
-  return idx % (BOARD_WIDTH - 1) == 0;
+  return (idx % BOARD_WIDTH) == (BOARD_WIDTH - 1);
 }
 
 auto GameBoard::for_each_cell(CellFunctor const &f) const -> void {
