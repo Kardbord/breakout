@@ -31,8 +31,10 @@ auto GameBoard::reset_bricks() -> void {
       m_board.at(i).set_cell_type(GameBoardCell::CellType::BRICK_ORANGE);
     } else if (i < BOARD_WIDTH * BRICK_HEIGHT * 6) {
       // Third 2 rows of bricks are green
+      m_board.at(i).set_cell_type(GameBoardCell::CellType::BRICK_GREEN);
     } else if (i < BOARD_WIDTH * BRICK_HEIGHT * 8) {
       // Fourth 2 rows of bricks are yellow
+      m_board.at(i).set_cell_type(GameBoardCell::CellType::BRICK_YELLOW);
     } else {
       throw std::out_of_range("A bug in the program caused us to go out of range while resetting bricks. This should be reported.");
     }
