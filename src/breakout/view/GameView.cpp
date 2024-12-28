@@ -147,17 +147,37 @@ auto GameView::build_game_active(model::GameStateActive const &state) -> ftxui::
       size_t x_idx = 0;
       size_t y_idx = 0;
       state.for_each_game_board_cell([&x_idx, &y_idx, &canvas](GBC const &cell) -> void {
-        Color color = Color::Black;
-        bool draw = true;
-        if (!cell.has_properties({GBC::Property::BRICK_END})) {
+        Color color = Color::Purple;
+        bool draw = false;
+        if (!cell.has_all_properties({GBC::Property::BRICK_END})) {
           switch (cell.get_cell_type()) {
-            case GBC::CellType::EMPTY:        color = Color::Default; draw = false; break;
-            case GBC::CellType::BRICK_RED:    color = Color::Red;                   break;
-            case GBC::CellType::BRICK_ORANGE: color = Color::DarkOrange;            break;
-            case GBC::CellType::BRICK_GREEN:  color = Color::Green;                 break;
-            case GBC::CellType::BRICK_YELLOW: color = Color::Yellow;                break;
-            case GBC::CellType::BALL:         color = Color::White;                 break;
-            case GBC::CellType::PADDLE:       color = Color::White;                 break;
+            case GBC::CellType::EMPTY:
+              color = Color::Default;
+              break;
+            case GBC::CellType::BRICK_RED:
+              color = Color::Red;
+              draw = true;
+              break;
+            case GBC::CellType::BRICK_ORANGE:
+              color = Color::DarkOrange;
+              draw = true;
+              break;
+            case GBC::CellType::BRICK_GREEN:
+              color = Color::Green;
+              draw = true;
+              break;
+            case GBC::CellType::BRICK_YELLOW:
+              color = Color::Yellow;
+              draw = true;
+              break;
+            case GBC::CellType::BALL:
+              color = Color::White;
+              draw = true;
+              break;
+            case GBC::CellType::PADDLE:
+              color = Color::White;
+              draw = true;
+              break;
             default:
               throw std::logic_error{"A bug in the program caused us to encounter an unkown cell type. This should be reported."};
           }
@@ -165,7 +185,7 @@ auto GameView::build_game_active(model::GameStateActive const &state) -> ftxui::
 
         canvas.DrawBlock(x_idx, y_idx, draw, color);
 
-        if (cell.has_properties({GBC::Property::ROW_END})) {
+        if (cell.has_all_properties({GBC::Property::ROW_END})) {
           x_idx = 0;
           ++y_idx;
         } else {

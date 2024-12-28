@@ -44,8 +44,10 @@ public:
   auto add_properties(std::initializer_list<Property> const &properties) -> void;
 
   // Returns true if a cell possesses all of the provided properties
-  auto has_properties(std::initializer_list<Property> const &properties) const -> bool;
+  auto has_all_properties(std::initializer_list<Property> const &properties) const -> bool;
 
+  // Returns true if a cell possesses any of the provided properties
+  auto has_any_properties(std::initializer_list<Property> const &properties) const -> bool;
 private:
 
   CellType m_type;

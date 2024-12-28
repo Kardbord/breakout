@@ -30,11 +30,18 @@ auto GameBoardCell::add_properties(std::initializer_list<Property> const &proper
   }
 }
 
-auto GameBoardCell::has_properties(std::initializer_list<Property> const &properties) const -> bool {
+auto GameBoardCell::has_all_properties(std::initializer_list<Property> const &properties) const -> bool {
   for (auto const &p: properties) {
     if ((m_properties & p) == 0) return false;
   }
   return true;
+}
+
+auto GameBoardCell::has_any_properties(std::initializer_list<Property> const &properties) const -> bool {
+  for (auto const &p: properties) {
+    if ((m_properties & p) == 1) return true;
+  }
+  return false;
 }
 
 } // namespace breakout::model
