@@ -8,14 +8,24 @@ GameBoard::GameBoard() {
   static_assert(BRICK_WIDTH > 1, "BRICK_WIDTH must be greater than 1 to prevent division by 0.");
   static_assert(BOARD_WIDTH > 1, "BOARD_WIDTH must be greater than 1 to prevent division by 0.");
   static_assert(PADDLE_WIDTH <= BOARD_WIDTH, "PADDLE_WIDTH must be less than or equal to BOARD_WIDTH");
-
-  reset_bricks();
-  reset_ball();
-  reset_paddle();
+  reset_board();
 }
 
 auto GameBoard::reset_board() -> void {
-  m_board = {};
+  for (uint32_t i = 0; i < m_board.size(); i += BOARD_WIDTH) {
+    if (!is_row_start(i)) {
+      throw std::logic_error{"A bug in the program caused the ROW_START property to be set incorrectly. This should be reported."};
+    }
+    m_board.at(i).add_properties({GameBoardCell::Property::ROW_START});
+  }
+
+  for (uint32_t i = BOARD_WIDTH - 1; i < m_board.size(); i += BOARD_WIDTH) {
+    if (!is_row_end(i)) {
+      throw std::logic_error{"A bug in the program caused the ROW_END property to be set incorrectly. This should be reported."};
+    }
+    m_board.at(i).add_properties({GameBoardCell::Property::ROW_END});
+  }
+
   reset_bricks();
   reset_ball();
   reset_paddle();
@@ -23,6 +33,12 @@ auto GameBoard::reset_board() -> void {
 
 auto GameBoard::reset_bricks() -> void {
   for (auto i = BRICK_START_IDX; i <= BRICK_END_IDX; ++i) {
+    if (is_brick_start(i)) {
+      m_board.at(i).add_properties({GameBoardCell::Property::BRICK_START});
+    } else if (is_brick_end(i)) {
+      m_board.at(i).add_properties({GameBoardCell::Property::BRICK_END});
+    }
+
     if (i < BOARD_WIDTH * BRICK_HEIGHT * 2) {
       // First 2 rows of bricks are red.
       m_board.at(i).set_cell_type(GameBoardCell::CellType::BRICK_RED);

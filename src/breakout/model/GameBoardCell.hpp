@@ -40,6 +40,9 @@ public:
 
   auto get_cell_value() const -> uint32_t;
 
+  // Add the provided properties to the cell
+  auto add_properties(std::initializer_list<Property> const &properties) -> void;
+
   // Returns true if a cell possesses all of the provided properties
   auto has_properties(std::initializer_list<Property> const &properties) const -> bool;
 

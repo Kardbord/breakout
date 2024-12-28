@@ -24,6 +24,11 @@ auto GameBoardCell::get_cell_value() const -> uint32_t {
   }
 }
 
+auto GameBoardCell::add_properties(std::initializer_list<Property> const &properties) -> void {
+  for (auto const &p: properties) {
+    m_properties |= p;
+  }
+}
 
 auto GameBoardCell::has_properties(std::initializer_list<Property> const &properties) const -> bool {
   for (auto const &p: properties) {
