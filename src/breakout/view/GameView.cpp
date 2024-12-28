@@ -8,6 +8,7 @@
 #include <ftxui/dom/elements.hpp>
 #include <ftxui/screen/screen.hpp>
 #include <memory>
+#include <stdexcept>
 #include <string>
 
 namespace breakout::view {
@@ -140,63 +141,38 @@ auto GameView::build_game_active(model::GameStateActive const &state) -> ftxui::
 
 
   return Renderer([&state]() -> Element {
+    Canvas canvas(GB::BOARD_WIDTH, GB::BOARD_HEIGHT);
 
-    state.for_each_game_board_cell([](GBC const &cell) -> void {
-
-    });
-
-    auto draw_brick_row = [=](Canvas& canvas, int start_x, int start_y, Color c) -> void {
-      for (uint32_t i = 0; i < GB::BOARD_WIDTH; ++i) {
-        uint32_t x_offset = i * GB::BRICK_WIDTH;
-        for (uint32_t y = 0; y < GB::BRICK_HEIGHT; ++y) {
-          for (uint32_t x = 0; x < GB::BRICK_WIDTH; ++x) {
-            bool is_block_end = (x == 0 || x == GB::BRICK_WIDTH - 1);
-            canvas.DrawBlock(start_x + x_offset + x, start_y + y, true, [is_block_end, c](Pixel &p) -> void {
-              if (is_block_end) {
-                p.foreground_color = Color::Black;
-              } else {
-                p.foreground_color = c;
-              }
-              p.dim = is_block_end;
-            });
+    { // Scope for indices
+      size_t x_idx = 0;
+      size_t y_idx = 0;
+      state.for_each_game_board_cell([&x_idx, &y_idx, &canvas](GBC const &cell) -> void {
+        Color color = Color::Black;
+        bool draw = true;
+        if (!cell.has_properties({GBC::Property::BRICK_END})) {
+          switch (cell.get_cell_type()) {
+            case GBC::CellType::EMPTY:        color = Color::Default; draw = false;
+            case GBC::CellType::BRICK_RED:    color = Color::Red;
+            case GBC::CellType::BRICK_ORANGE: color = Color::DarkOrange;
+            case GBC::CellType::BRICK_GREEN:  color = Color::Green;
+            case GBC::CellType::BRICK_YELLOW: color = Color::Yellow;
+            case GBC::CellType::BALL:         color = Color::White;
+            case GBC::CellType::PADDLE:       color = Color::White;
+            default:
+              throw std::logic_error{"A bug in the program caused us to encounter an unkown cell type. This should be reported."};
           }
         }
-      }
-    };
 
-    auto draw_ball = [=](Canvas& canvas, int start_x, int start_y, Color color) {
-      for (uint32_t y = 0; y < GB::BALL_HEIGHT; ++y) {
-        for (uint32_t x = 0; x < GB::BALL_WIDTH; ++x) {
-          canvas.DrawBlock(start_x + x, start_y + y, true, color);
+        canvas.DrawBlock(x_idx, y_idx, draw, color);
+
+        if (cell.has_properties({GBC::Property::ROW_END})) {
+          x_idx = 0;
+          ++y_idx;
+        } else {
+          ++x_idx;
         }
-      }
-    };
-
-    auto draw_paddle = [=](Canvas& canvas, int start_x, int start_y, Color color) -> void {
-      for (uint32_t y = 0; y < GB::PADDLE_HEIGHT; ++y) {
-        for (uint32_t x = 0; x < GB::PADDLE_WIDTH; ++x) {
-          canvas.DrawBlock(start_x + x, start_y + y, true, color);
-        }
-      }
-    };
-
-    Canvas canvas(GB::BOARD_WIDTH, GB::BOARD_HEIGHT);
-    draw_brick_row(canvas, 0, 0,                Color::Red);
-    draw_brick_row(canvas, 0, GB::BRICK_HEIGHT,     Color::Red);
-    draw_brick_row(canvas, 0, GB::BRICK_HEIGHT * 2, Color::DarkOrange);
-    draw_brick_row(canvas, 0, GB::BRICK_HEIGHT * 3, Color::DarkOrange);
-    draw_brick_row(canvas, 0, GB::BRICK_HEIGHT * 4, Color::Green);
-    draw_brick_row(canvas, 0, GB::BRICK_HEIGHT * 5, Color::Green);
-    draw_brick_row(canvas, 0, GB::BRICK_HEIGHT * 6, Color::Yellow);
-    draw_brick_row(canvas, 0, GB::BRICK_HEIGHT * 7, Color::Yellow);
-
-
-    const auto ball_x = (GB::BOARD_WIDTH / 2) - (GB::BALL_WIDTH / 2);
-    const auto ball_y = (GB::BOARD_HEIGHT / 2) - (GB::BALL_HEIGHT / 2);
-    draw_ball(canvas, ball_x, ball_y, Color::White);
-
-    int paddle_x_position = (GB::BOARD_WIDTH / 2) - (GB::PADDLE_WIDTH / 2);
-    draw_paddle(canvas, paddle_x_position, GB::BOARD_HEIGHT - GB::PADDLE_HEIGHT - 1, Color::White);
+      });
+    }
 
     FlexboxConfig config;
     config.direction = FlexboxConfig::Direction::Column;
