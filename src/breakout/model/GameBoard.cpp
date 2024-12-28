@@ -119,7 +119,7 @@ auto GameBoard::is_brick_start(uint32_t const idx) -> bool {
 }
 
 auto GameBoard::is_brick_end(uint32_t const idx) -> bool {
-  return idx >= BRICK_START_IDX && idx <= BRICK_END_IDX && idx % (BRICK_WIDTH - 1) == 0;
+  return idx >= BRICK_START_IDX && idx <= BRICK_END_IDX && (idx % BRICK_WIDTH) == (BRICK_WIDTH - 1);
 }
 
 // Is this cell the start of a row?
