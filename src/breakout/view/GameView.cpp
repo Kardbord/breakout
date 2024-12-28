@@ -151,13 +151,13 @@ auto GameView::build_game_active(model::GameStateActive const &state) -> ftxui::
         bool draw = true;
         if (!cell.has_properties({GBC::Property::BRICK_END})) {
           switch (cell.get_cell_type()) {
-            case GBC::CellType::EMPTY:        color = Color::Default; draw = false;
-            case GBC::CellType::BRICK_RED:    color = Color::Red;
-            case GBC::CellType::BRICK_ORANGE: color = Color::DarkOrange;
-            case GBC::CellType::BRICK_GREEN:  color = Color::Green;
-            case GBC::CellType::BRICK_YELLOW: color = Color::Yellow;
-            case GBC::CellType::BALL:         color = Color::White;
-            case GBC::CellType::PADDLE:       color = Color::White;
+            case GBC::CellType::EMPTY:        color = Color::Default; draw = false; break;
+            case GBC::CellType::BRICK_RED:    color = Color::Red;                   break;
+            case GBC::CellType::BRICK_ORANGE: color = Color::DarkOrange;            break;
+            case GBC::CellType::BRICK_GREEN:  color = Color::Green;                 break;
+            case GBC::CellType::BRICK_YELLOW: color = Color::Yellow;                break;
+            case GBC::CellType::BALL:         color = Color::White;                 break;
+            case GBC::CellType::PADDLE:       color = Color::White;                 break;
             default:
               throw std::logic_error{"A bug in the program caused us to encounter an unkown cell type. This should be reported."};
           }
