@@ -49,7 +49,7 @@ auto GameController::handle_main_menu_events(model::GameStateMainMenu const& sta
 
 auto GameController::handle_pause_menu_events(model::GameStatePauseMenu const&) -> bool {
 
-  return true;
+  return false;
 }
 
 auto GameController::handle_help_menu_events(model::GameStateHelpMenu const& state) -> bool {
@@ -66,7 +66,7 @@ auto GameController::handle_help_menu_events(model::GameStateHelpMenu const& sta
 
 auto GameController::handle_game_active_events(model::GameStateActive const&) -> bool {
 
-  return true;
+  return false;
 }
 
 
