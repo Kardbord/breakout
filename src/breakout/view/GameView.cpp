@@ -82,7 +82,7 @@ auto GameView::render() -> void {
     renderer = std::visit(m_visitor, *p_state);
   }
 
-  renderer | ftxui::CatchEvent([&](ftxui::Event event) -> bool { return m_event_handler(event); });
+  renderer |= ftxui::CatchEvent([&](ftxui::Event event) -> bool { return m_event_handler(event); });
   exit_main_loop();
   auto screen = ftxui::ScreenInteractive::Fullscreen();
   m_exit_closure = screen.ExitLoopClosure();
