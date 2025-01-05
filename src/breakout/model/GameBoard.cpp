@@ -113,18 +113,20 @@ auto GameBoard::move_paddle(uint32_t const paddle_start_idx) -> void {
       for (uint32_t i = 0; i < PADDLE_WIDTH; ++i) {
         uint32_t x = start_x + i;
         uint32_t y = start_y + j;
-
-        if (x >= BOARD_WIDTH || y >= BOARD_HEIGHT) {
-          throw std::out_of_range("Paddle exceeds board boundaries.");
-        }
-
         m_board.at(coords_to_idx(x, y)).set_cell_type(ct);
       }
     }
   };
 
+  uint32_t corrected_idx = paddle_start_idx;
+  if (paddle_start_idx < m_board.size() - (BOARD_WIDTH * PADDLE_HEIGHT)) {
+    corrected_idx = m_board.size() - (BOARD_WIDTH * PADDLE_HEIGHT);
+  } else if (paddle_start_idx > m_board.size() - (BOARD_WIDTH * PADDLE_HEIGHT) + BOARD_WIDTH - PADDLE_WIDTH) {
+    corrected_idx = m_board.size() - (BOARD_WIDTH * PADDLE_HEIGHT) + BOARD_WIDTH - PADDLE_WIDTH;
+  }
+
   set_paddle_cells(GameBoardCell::CellType::EMPTY);
-  m_paddle_start_idx = paddle_start_idx;
+  m_paddle_start_idx = corrected_idx;
   set_paddle_cells(GameBoardCell::CellType::PADDLE);
 }
 

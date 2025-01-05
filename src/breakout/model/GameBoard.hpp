@@ -20,7 +20,7 @@ public:
 
   // Amount of space taken on the board by the paddle
   static inline constexpr uint32_t PADDLE_WIDTH  = BRICK_WIDTH * 2;
-  static inline constexpr uint32_t PADDLE_HEIGHT = 2;
+  static inline constexpr uint32_t PADDLE_HEIGHT = 1;
 
   // Dimensions of the ball on the board
   static inline constexpr uint32_t BALL_WIDTH  = 2;
