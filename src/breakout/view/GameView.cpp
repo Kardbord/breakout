@@ -144,8 +144,8 @@ auto GameView::build_game_active(model::GameStateActive const &state) -> ftxui::
     Canvas canvas(GB::BOARD_WIDTH, GB::BOARD_HEIGHT);
 
     { // Scope for indices
-      size_t x_idx = 0;
-      size_t y_idx = 0;
+      int x_idx = 0;
+      int y_idx = 0;
       state.for_each_game_board_cell([&x_idx, &y_idx, &canvas](GBC const &cell) -> void {
         Color color = Color::Purple;
         bool draw = false;
