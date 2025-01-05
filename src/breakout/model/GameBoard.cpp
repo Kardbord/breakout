@@ -163,4 +163,13 @@ auto GameBoard::for_each_cell(CellFunctor const &f) const -> void {
     f(cell);
   }
 }
+
+auto GameBoard::shift_paddle_left() -> void {
+  move_paddle(m_paddle_start_idx - 1);
+}
+
+auto GameBoard::shift_paddle_right() -> void {
+  move_paddle(m_paddle_start_idx + 1);
+}
+
 } // namespace breakout::model

@@ -15,4 +15,12 @@ auto GameStateActive::for_each_game_board_cell(GameBoard::CellFunctor const &f) 
   m_board.for_each_cell(f);
 }
 
+auto GameStateActive::shift_paddle_left() -> void {
+  m_board.shift_paddle_left();
+}
+
+auto GameStateActive::shift_paddle_right() -> void {
+  m_board.shift_paddle_right();
+}
+
 } // namespace breakout::model

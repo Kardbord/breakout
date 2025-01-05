@@ -27,10 +27,10 @@ private:
 
   view::GameView m_view;
 
-  using VisitMainMenu  = std::function<bool(model::GameStateMainMenu const&)>;
-  using VisitPauseMenu = std::function<bool(model::GameStatePauseMenu const&)>;
-  using VisitHelpMenu  = std::function<bool(model::GameStateHelpMenu const&)>;
-  using VisitActive    = std::function<bool(model::GameStateActive const&)>;
+  using VisitMainMenu  = std::function<bool(model::GameStateMainMenu&)>;
+  using VisitPauseMenu = std::function<bool(model::GameStatePauseMenu&)>;
+  using VisitHelpMenu  = std::function<bool(model::GameStateHelpMenu&)>;
+  using VisitActive    = std::function<bool(model::GameStateActive&)>;
 
   utils::Visitor<VisitMainMenu,
   /**/    VisitPauseMenu,
@@ -39,10 +39,10 @@ private:
 
   auto handle_event(ftxui::Event) -> bool;
 
-  auto handle_main_menu_events(model::GameStateMainMenu const&)   -> bool;
-  auto handle_pause_menu_events(model::GameStatePauseMenu const&) -> bool;
-  auto handle_help_menu_events(model::GameStateHelpMenu const&)   -> bool;
-  auto handle_game_active_events(model::GameStateActive const&)   -> bool;
+  auto handle_main_menu_events(model::GameStateMainMenu&)   -> bool;
+  auto handle_pause_menu_events(model::GameStatePauseMenu&) -> bool;
+  auto handle_help_menu_events(model::GameStateHelpMenu&)   -> bool;
+  auto handle_game_active_events(model::GameStateActive&)   -> bool;
 };
 
 } // namespace breakout::controller

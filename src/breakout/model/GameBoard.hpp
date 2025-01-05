@@ -59,6 +59,9 @@ public:
   using CellFunctor = std::function<void(GameBoardCell const&)>;
   auto for_each_cell(CellFunctor const &f) const -> void;
 
+  auto shift_paddle_left() -> void;
+  auto shift_paddle_right() -> void;
+
 private:
 
   static inline constexpr uint32_t BRICK_START_IDX = 0;

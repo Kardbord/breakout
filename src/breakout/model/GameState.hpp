@@ -78,6 +78,9 @@ public:
 
   auto for_each_game_board_cell(GameBoard::CellFunctor const &f) const -> void;
 
+  auto shift_paddle_left() -> void;
+  auto shift_paddle_right() -> void;
+
 protected:
   GameBoard m_board;
 };
