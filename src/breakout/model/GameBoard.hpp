@@ -59,8 +59,8 @@ public:
   using CellFunctor = std::function<void(GameBoardCell const&)>;
   auto for_each_cell(CellFunctor const &f) const -> void;
 
-  auto shift_paddle_left() -> void;
-  auto shift_paddle_right() -> void;
+  auto shift_paddle_left(uint32_t shift = BOARD_WIDTH / 50) -> void;
+  auto shift_paddle_right(uint32_t shift = BOARD_WIDTH / 50) -> void;
 
 private:
 
