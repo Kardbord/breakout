@@ -138,7 +138,7 @@ auto GameBoard::reset_ball() -> void {
 
 auto GameBoard::reset_paddle() -> void {
   uint32_t paddle_x = (BOARD_WIDTH - PADDLE_WIDTH) / 2;
-  uint32_t paddle_y = BOARD_HEIGHT - PADDLE_HEIGHT - 1;
+  uint32_t paddle_y = BOARD_HEIGHT - PADDLE_HEIGHT;
   move_paddle(paddle_x, paddle_y);
 }
 
