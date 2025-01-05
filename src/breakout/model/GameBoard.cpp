@@ -64,15 +64,17 @@ auto GameBoard::coords_to_idx(uint32_t const x, uint32_t const y) const -> uint3
   if (y >= BOARD_HEIGHT) {
     throw std::out_of_range("Y coordinate out of bounds");
   }
-  return (y * BOARD_WIDTH) + x;
+  uint32_t mirroredY = (BOARD_HEIGHT - 1) - y;
+  return mirroredY * BOARD_WIDTH + x;
 }
 
 auto GameBoard::idx_to_coords(uint32_t const idx) const -> std::tuple<uint32_t, uint32_t> {
   if (idx >= BOARD_WIDTH * BOARD_HEIGHT) {
     throw std::out_of_range("idx out of bounds");
   }
-  int y = idx / BOARD_WIDTH;
-  int x = idx % BOARD_WIDTH;
+  uint32_t y = idx / BOARD_WIDTH;
+  y = (BOARD_HEIGHT - 1) - y;
+  uint32_t x = idx % BOARD_WIDTH;
   return {x, y};
 }
 
