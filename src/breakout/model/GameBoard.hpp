@@ -71,7 +71,9 @@ private:
   auto idx_to_coords(uint32_t idx) const -> std::tuple<uint32_t, uint32_t>;
 
   auto move_ball(uint32_t ball_start_x, uint32_t ball_start_y) -> void;
+  auto move_ball(uint32_t ball_start_idx) -> void;
   auto move_paddle(uint32_t paddle_start_x, uint32_t paddle_start_y) -> void;
+  auto move_paddle(uint32_t paddle_start_idx) -> void;
 
   auto reset_bricks() -> void;
   auto reset_ball() -> void;
