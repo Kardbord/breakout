@@ -1,4 +1,4 @@
-#include "breakout/model/GameBoardCell.hpp"
+#include <breakout/model/GameBoardCell.hpp>
 #include <breakout/model/GameBoard.hpp>
 #include <stdexcept>
 
@@ -26,9 +26,9 @@ auto GameBoard::reset_board() -> void {
     m_board.at(i).add_properties({GameBoardCell::Property::ROW_END});
   }
 
-  reset_bricks();
   reset_ball();
   reset_paddle();
+  reset_bricks();
 }
 
 auto GameBoard::reset_bricks() -> void {
@@ -64,8 +64,7 @@ auto GameBoard::coords_to_idx(uint32_t const x, uint32_t const y) const -> uint3
   if (y >= BOARD_HEIGHT) {
     throw std::out_of_range("Y coordinate out of bounds");
   }
-  uint32_t mirroredY = (BOARD_HEIGHT - 1) - y;
-  return mirroredY * BOARD_WIDTH + x;
+  return y * BOARD_WIDTH + x;
 }
 
 auto GameBoard::idx_to_coords(uint32_t const idx) const -> std::tuple<uint32_t, uint32_t> {
@@ -73,7 +72,6 @@ auto GameBoard::idx_to_coords(uint32_t const idx) const -> std::tuple<uint32_t, 
     throw std::out_of_range("idx out of bounds");
   }
   uint32_t y = idx / BOARD_WIDTH;
-  y = (BOARD_HEIGHT - 1) - y;
   uint32_t x = idx % BOARD_WIDTH;
   return {x, y};
 }
@@ -82,37 +80,45 @@ auto GameBoard::move_ball(uint32_t const ball_start_x, uint32_t const ball_start
   move_ball(coords_to_idx(ball_start_x, ball_start_y));
 }
 
-auto GameBoard::move_ball(uint32_t ball_start_idx) -> void {
+auto GameBoard::move_ball(uint32_t const ball_start_idx) -> void {
   auto set_ball_cells = [this](GameBoardCell::CellType const ct) -> void {
-    for (uint32_t i = m_ball_start_idx; i < BALL_WIDTH; ++i) {
-      for (uint32_t j = 0; j < BALL_HEIGHT; ++j) {
-        m_board.at(i + (BOARD_WIDTH * j)).set_cell_type(ct);
+    auto [start_x, start_y] = idx_to_coords(m_ball_start_idx);
+    for (uint32_t j = 0; j < BALL_HEIGHT; ++j) {
+      for (uint32_t i = 0; i < BALL_WIDTH; ++i) {
+        uint32_t x = start_x + i;
+        uint32_t y = start_y + j;
+
+        if (x >= BOARD_WIDTH || y >= BOARD_HEIGHT) {
+          throw std::out_of_range("Ball exceeds board boundaries.");
+        }
+
+        m_board.at(coords_to_idx(x, y)).set_cell_type(ct);
       }
     }
   };
 
   set_ball_cells(GameBoardCell::CellType::EMPTY);
-  // TODO: Ensure ball is not split between rows or over the edge of the board.
   m_ball_start_idx = ball_start_idx;
   set_ball_cells(GameBoardCell::CellType::BALL);
 }
 
 auto GameBoard::move_paddle(uint32_t const paddle_start_x, uint32_t const paddle_start_y) -> void {
-  uint32_t paddle_start_idx = coords_to_idx(paddle_start_x, paddle_start_y);
-  if (paddle_start_y < BOARD_HEIGHT - 1) { // Do we have room on the lhs of our board for the paddle?
-    paddle_start_idx = coords_to_idx(0, BOARD_HEIGHT - 1);
-  } else if (paddle_start_x + PADDLE_WIDTH > BOARD_WIDTH) { // Do we have room on the rhs of our board for the paddle?
-    paddle_start_idx = coords_to_idx(BOARD_WIDTH - PADDLE_WIDTH, BOARD_HEIGHT - PADDLE_HEIGHT);
-  }
-
-  move_paddle(paddle_start_idx);
+  move_paddle(coords_to_idx(paddle_start_x, paddle_start_y));
 }
 
-auto GameBoard::move_paddle(uint32_t paddle_start_idx) -> void {
+auto GameBoard::move_paddle(uint32_t const paddle_start_idx) -> void {
   auto set_paddle_cells = [this](GameBoardCell::CellType const ct) -> void {
-    for (uint32_t i = m_paddle_start_idx; i < PADDLE_WIDTH; ++i) {
-      for (uint32_t j = 0; j < PADDLE_HEIGHT; ++j) {
-        m_board.at(i + (BOARD_WIDTH * j)).set_cell_type(ct);
+    auto [start_x, start_y] = idx_to_coords(m_paddle_start_idx);
+    for (uint32_t j = 0; j < PADDLE_HEIGHT; ++j) {
+      for (uint32_t i = 0; i < PADDLE_WIDTH; ++i) {
+        uint32_t x = start_x + i;
+        uint32_t y = start_y + j;
+
+        if (x >= BOARD_WIDTH || y >= BOARD_HEIGHT) {
+          throw std::out_of_range("Paddle exceeds board boundaries.");
+        }
+
+        m_board.at(coords_to_idx(x, y)).set_cell_type(ct);
       }
     }
   };
@@ -123,14 +129,14 @@ auto GameBoard::move_paddle(uint32_t paddle_start_idx) -> void {
 }
 
 auto GameBoard::reset_ball() -> void {
-  auto ball_x = (BOARD_WIDTH / 2) - (BALL_WIDTH / 2);
-  auto ball_y = (BOARD_HEIGHT / 2) - (BALL_HEIGHT / 2);
+  uint32_t ball_x = (BOARD_WIDTH - BALL_WIDTH) / 2;
+  uint32_t ball_y = (BOARD_HEIGHT - BALL_HEIGHT) / 2;
   move_ball(ball_x, ball_y);
 }
 
 auto GameBoard::reset_paddle() -> void {
-  auto paddle_x = (BOARD_WIDTH / 2) - (PADDLE_WIDTH / 2);
-  auto paddle_y = BOARD_HEIGHT - PADDLE_HEIGHT - 1;
+  uint32_t paddle_x = (BOARD_WIDTH - PADDLE_WIDTH) / 2;
+  uint32_t paddle_y = BOARD_HEIGHT - PADDLE_HEIGHT - 1;
   move_paddle(paddle_x, paddle_y);
 }
 
