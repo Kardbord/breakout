@@ -65,6 +65,8 @@ auto GameController::handle_help_menu_events(model::GameStateHelpMenu& state) ->
 }
 
 auto GameController::handle_game_active_events(model::GameStateActive& state) -> bool {
+  state.start_ball_engine();
+
   static const std::set<ftxui::Event> paddle_left_evts{
     ftxui::Event::Character("a"),
     ftxui::Event::ArrowLeft,

@@ -1,7 +1,10 @@
 #ifndef BREAKOUT_GAMESTATE_HPP
 #define BREAKOUT_GAMESTATE_HPP
 
+#include <atomic>
 #include <ftxui/component/event.hpp>
+#include <optional>
+#include <thread>
 #include <variant>
 #include <breakout/model/GameBoard.hpp>
 
@@ -68,21 +71,31 @@ protected:
 class GameStateActive : public GameStateBase {
 public:
 
-  GameStateActive() = default;
-  ~GameStateActive() = default;
+  constexpr inline static uint32_t k_ball_engine_update_rate_hz = 5;
 
-  GameStateActive(const GameStateActive&) = default;
-  GameStateActive& operator=(const GameStateActive&) = default;
-  GameStateActive(GameStateActive&&) = default;
-  GameStateActive& operator=(GameStateActive&&) = default;
+  GameStateActive() = default;
+  ~GameStateActive();
+
+  GameStateActive(const GameStateActive&) = delete;
+  GameStateActive& operator=(const GameStateActive&) = delete;
+  GameStateActive(GameStateActive&&);
+  GameStateActive& operator=(GameStateActive&&);
 
   auto for_each_game_board_cell(GameBoard::CellFunctor const &f) const -> void;
 
   auto shift_paddle_left() -> void;
   auto shift_paddle_right() -> void;
 
+  auto start_ball_engine() -> void;
+  auto stop_ball_engine() -> void;
+
 protected:
+  auto ball_engine_loop() -> void;
+
   GameBoard m_board;
+
+  std::atomic_bool m_ball_engine_sentinel;
+  std::optional<std::thread> m_ball_engine_thread;
 };
 
 // The ordering of template types is important here, as the
