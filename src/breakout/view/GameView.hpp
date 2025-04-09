@@ -68,10 +68,10 @@ private:
 
   EventHandler m_event_handler;
 
-  auto build_main_menu(model::GameStateMainMenu const&)   -> ftxui::Component;
-  auto build_pause_menu(model::GameStatePauseMenu const&) -> ftxui::Component;
-  auto build_help_menu(model::GameStateHelpMenu const&)   -> ftxui::Component;
-  auto build_game_active(model::GameStateActive const&)   -> ftxui::Component;
+  auto build_main_menu(model::GameStateMainMenu const&)   const -> ftxui::Component;
+  auto build_pause_menu(model::GameStatePauseMenu const&) const -> ftxui::Component;
+  auto build_help_menu(model::GameStateHelpMenu const&)   const -> ftxui::Component;
+  auto build_game_active(model::GameStateActive const&)   const -> ftxui::Component;
 
 };
 

@@ -93,7 +93,7 @@ auto GameView::exit_main_loop() -> void {
   m_exit_closure.value_or([]() -> void {})();
 }
 
-auto GameView::build_main_menu(model::GameStateMainMenu const&) -> ftxui::Component {
+auto GameView::build_main_menu(model::GameStateMainMenu const&) const -> ftxui::Component {
   using namespace ftxui;
 
   auto p_play_button = Button("  Play  ", [this]() -> void { (void)m_event_handler(Event::MainMenuPlayButton); }, ButtonOption::Simple());
@@ -126,7 +126,7 @@ auto GameView::build_main_menu(model::GameStateMainMenu const&) -> ftxui::Compon
   });
 }
 
-auto GameView::build_pause_menu(model::GameStatePauseMenu const&) -> ftxui::Component {
+auto GameView::build_pause_menu(model::GameStatePauseMenu const&) const -> ftxui::Component {
   using ftxui::Renderer;
   using ftxui::Element;
   return Renderer([]() -> Element {
@@ -134,7 +134,7 @@ auto GameView::build_pause_menu(model::GameStatePauseMenu const&) -> ftxui::Comp
   });
 }
 
-auto GameView::build_game_active(model::GameStateActive const &state) -> ftxui::Component {
+auto GameView::build_game_active(model::GameStateActive const &state) const -> ftxui::Component {
   using namespace::ftxui;
   using GB  = ::breakout::model::GameBoard;
   using GBC = ::breakout::model::GameBoardCell;
@@ -199,7 +199,7 @@ auto GameView::build_game_active(model::GameStateActive const &state) -> ftxui::
   });
 }
 
-auto GameView::build_help_menu(model::GameStateHelpMenu const&) -> ftxui::Component {
+auto GameView::build_help_menu(model::GameStateHelpMenu const&) const -> ftxui::Component {
   using namespace ftxui;
 
   auto p_main_menu_button = Button("  Main Menu  ", [this]() -> void { (void)m_event_handler(Event::MainMenuButton); }, ButtonOption::Simple());
