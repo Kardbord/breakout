@@ -65,13 +65,13 @@ auto GameController::handle_help_menu_events(model::GameStateHelpMenu& state) ->
 }
 
 auto GameController::handle_game_active_events(model::GameStateActive& state) -> bool {
-  static std::set<ftxui::Event> paddle_left_evts{
+  static const std::set<ftxui::Event> paddle_left_evts{
     ftxui::Event::Character("a"),
     ftxui::Event::ArrowLeft,
     ftxui::Event::Character("h"),
   };
 
-  static std::set<ftxui::Event> paddle_right_evts{
+  static const std::set<ftxui::Event> paddle_right_evts{
     ftxui::Event::Character("d"),
     ftxui::Event::ArrowRight,
     ftxui::Event::Character("l"),
