@@ -90,6 +90,7 @@ public:
   auto stop_ball_engine() -> void;
 
 protected:
+
   auto ball_engine_loop() -> void;
 
   GameBoard m_board;

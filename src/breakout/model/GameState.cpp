@@ -85,7 +85,7 @@ auto GameStateActive::ball_engine_loop() -> void {
 
   while (m_ball_engine_sentinel) {
     frame_start = std::chrono::steady_clock::now();
-    // TODO: Update ball location
+    m_board.shift_ball();
     frame_end = std::chrono::steady_clock::now();
     frame_duration = frame_start - frame_end;
     if (frame_duration < k_update_interval) {

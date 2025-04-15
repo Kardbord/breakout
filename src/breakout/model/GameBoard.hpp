@@ -43,7 +43,7 @@ public:
   GameBoard& operator=(GameBoard&&) = default;
 
   auto reset_board() -> void;
-  
+
   // Is this cell the beginning of a brick?
   static auto is_brick_start(uint32_t idx) -> bool;
 
@@ -61,6 +61,15 @@ public:
 
   auto shift_paddle_left(uint32_t shift = BOARD_WIDTH / 25) -> void;
   auto shift_paddle_right(uint32_t shift = BOARD_WIDTH / 25) -> void;
+
+  enum class BallTrajectory {
+    UpLeft,
+    UpRight,
+    DownLeft,
+    DownRight
+  };
+
+  auto shift_ball(uint32_t shift = 1) -> void;
 
 private:
 
@@ -86,6 +95,8 @@ private:
 
   // Current position of the first cell of the paddle
   uint32_t m_paddle_start_idx;
+
+  BallTrajectory m_ball_trajectory{BallTrajectory::DownRight};
 
   // Current position of the first cell of the ball
   uint32_t m_ball_start_idx;

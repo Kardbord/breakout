@@ -175,4 +175,29 @@ auto GameBoard::shift_paddle_right(uint32_t const shift) -> void {
   move_paddle(m_paddle_start_idx + shift);
 }
 
+auto GameBoard::shift_ball(uint32_t const shift) -> void {
+  auto const [ball_x, ball_y] = idx_to_coords(m_ball_start_idx);
+  switch (m_ball_trajectory) {
+    case BallTrajectory::UpRight: {
+      move_ball(ball_x + shift, ball_y + shift);
+      break;
+    }
+    case BallTrajectory::UpLeft: {
+      move_ball(ball_x - shift, ball_y + shift);
+      break;
+    }
+    case BallTrajectory::DownRight: {
+      move_ball(ball_x + shift, ball_y - shift);
+      break;
+    }
+    case BallTrajectory::DownLeft: {
+      move_ball(ball_x - shift, ball_y - shift);
+      break;
+    }
+    default: {
+      throw std::logic_error("A bug in the game logic caused an error moving the ball. This should be reported.");
+    }
+  }
+}
+
 } // namespace breakout::model

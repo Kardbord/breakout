@@ -37,6 +37,7 @@ auto GameController::handle_main_menu_events(model::GameStateMainMenu& state) ->
     m_view.exit_main_loop();
   } else if (last_event == view::Event::MainMenuPlayButton) {
     *mp_state = model::GameStateActive{};
+    // TODO: Need a way to ensure that the view is updated along with the state as the ball moves
     m_view.render();
   } else if (last_event == view::Event::HelpButton) {
     *mp_state = model::GameStateHelpMenu{};
