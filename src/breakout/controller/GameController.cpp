@@ -1,3 +1,4 @@
+#include <breakout/utils/Logger.hpp>
 #include <breakout/model/GameState.hpp>
 #include <breakout/view/GameView.hpp>
 #include <breakout/controller/GameController.hpp>
@@ -21,6 +22,7 @@ GameController::GameController() : mp_state{std::make_shared<model::GameState>()
 }
 
 auto GameController::handle_event(ftxui::Event e) -> bool {
+  LOG << "Handling event " << e.DebugString();
   std::visit(utils::Visitor{
     [e](model::GameStateMainMenu &state)  -> void { state.set_last_event(e); },
     [e](model::GameStatePauseMenu &state) -> void { state.set_last_event(e); },
