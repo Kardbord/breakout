@@ -3,6 +3,7 @@
 
 #include <breakout/model/GameState.hpp>
 #include <breakout/utils/Visitor.hpp>
+#include <breakout/controller/EventHandler.hpp>
 #include <ftxui/component/component.hpp>
 #include <ftxui/component/event.hpp>
 #include <ftxui/component/screen_interactive.hpp>
@@ -13,8 +14,6 @@
 #include <optional>
 
 namespace breakout::view {
-
-using EventHandler = std::function<bool(ftxui::Event)>;
 
 namespace Event {
 
@@ -28,7 +27,7 @@ const ftxui::Event MainMenuButton     = ftxui::Event::Special("GoToMainMenuButto
 class GameView {
 public:
   GameView() = delete;
-  GameView(std::weak_ptr<const model::GameState>, EventHandler const&);
+  GameView(std::weak_ptr<const model::GameState>, controller::EventHandler const&);
   ~GameView() = default;
 
   GameView(const GameView&) = delete;
@@ -66,7 +65,7 @@ private:
   /**/    VisitHelpMenu,
   /**/    VisitActive> m_visitor;
 
-  EventHandler m_event_handler;
+  controller::EventHandler m_event_handler;
 
   auto build_main_menu(model::GameStateMainMenu const&)   const -> ftxui::Component;
   auto build_pause_menu(model::GameStatePauseMenu const&) const -> ftxui::Component;

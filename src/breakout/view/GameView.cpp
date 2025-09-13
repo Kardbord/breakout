@@ -62,7 +62,9 @@ auto get_help_text() -> ftxui::Element {
   });
 }
 
-GameView::GameView(std::weak_ptr<const model::GameState> const p_state, EventHandler const& event_handler) : mp_state{std::move(p_state)}, m_event_handler{event_handler} {
+GameView::GameView(std::weak_ptr<const model::GameState> const p_state, controller::EventHandler const& event_handler):
+  mp_state{std::move(p_state)}, m_event_handler{event_handler}
+{
   m_visitor = {
     [this](model::GameStateMainMenu const& state)  -> ftxui::Component { return build_main_menu(state); },
     [this](model::GameStatePauseMenu const& state) -> ftxui::Component { return build_pause_menu(state); },
