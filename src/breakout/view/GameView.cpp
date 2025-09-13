@@ -88,7 +88,14 @@ auto GameView::render() -> void {
   exit_main_loop();
   auto screen = ftxui::ScreenInteractive::Fullscreen();
   m_exit_closure = screen.ExitLoopClosure();
+  m_refresh_closure = [&screen]() -> void {
+    screen.PostEvent(Event::RefreshRequested);
+  };
   screen.Loop(renderer);
+}
+
+auto GameView::refresh() -> void {
+  m_refresh_closure.value_or([]() -> void {})();
 }
 
 auto GameView::exit_main_loop() -> void {

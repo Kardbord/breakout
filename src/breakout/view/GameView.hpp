@@ -21,6 +21,7 @@ static inline const ftxui::Event QuitButton         = ftxui::Event::Special("Qui
 static inline const ftxui::Event MainMenuPlayButton = ftxui::Event::Special("MainMenuPlayButton");
 static inline const ftxui::Event HelpButton         = ftxui::Event::Special("GoToHelpButton");
 static inline const ftxui::Event MainMenuButton     = ftxui::Event::Special("GoToMainMenuButton");
+static inline const ftxui::Event RefreshRequested   = ftxui::Event::Special("RefreshRequested");
 
 } // namespace Event
 
@@ -47,10 +48,14 @@ public:
   auto render() -> void;
   auto exit_main_loop() -> void;
 
+  // Request that the current rendering be refreshed.
+  auto refresh() -> void;
+
 private:
 
   // A Closure that can be used to exit the current main screen loop.
   std::optional<ftxui::Closure> m_exit_closure{std::nullopt};
+  std::optional<ftxui::Closure> m_refresh_closure{std::nullopt};
 
   // A non-owning, read-only reference to the game state.
   const std::weak_ptr<const model::GameState> mp_state;

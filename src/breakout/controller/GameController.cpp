@@ -88,7 +88,7 @@ auto GameController::handle_game_active_events(model::GameStateActive& state) ->
   } else if (paddle_right_evts.count(last_event) > 0) {
     state.shift_paddle_right();
   } else if (last_event == model::Event::BallMoved) {
-    // Break, return true
+    m_view.refresh();
   } else {
     return false;
   }
