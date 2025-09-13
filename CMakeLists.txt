@@ -42,7 +42,8 @@ else()
            -Wextra
            -Wpedantic
            -Werror
-           $<$<CONFIG:RELEASE>:-Ofast>
+           $<$<CONFIG:RELEASE>:-O3>
+           $<$<CONFIG:RELEASE>:-ffast-math>
            $<$<CONFIG:DEBUG>:-O0>
            $<$<CONFIG:DEBUG>:-ggdb3>)
 endif()
