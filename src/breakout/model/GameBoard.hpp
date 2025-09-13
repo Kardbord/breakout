@@ -94,12 +94,12 @@ private:
   std::array<GameBoardCell, BOARD_WIDTH * BOARD_HEIGHT> m_board;
 
   // Current position of the first cell of the paddle
-  uint32_t m_paddle_start_idx;
+  uint32_t m_paddle_start_idx{0};
 
   BallTrajectory m_ball_trajectory{BallTrajectory::DownRight};
 
   // Current position of the first cell of the ball
-  uint32_t m_ball_start_idx;
+  uint32_t m_ball_start_idx{0};
 
 };
 

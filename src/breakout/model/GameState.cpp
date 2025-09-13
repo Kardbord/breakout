@@ -1,9 +1,12 @@
 #include <breakout/model/GameState.hpp>
+#include <breakout/utils/Logger.hpp>
 #include <chrono>
 #include <ratio>
 #include <thread>
 
 namespace breakout::model {
+
+GameStateActive::GameStateActive(controller::EventHandler const &h): GameStateBase{}, m_event_handler{h} {}
 
 GameStateActive::GameStateActive(GameStateActive&& other): GameStateBase{std::move(other)} {
   m_ball_engine_sentinel = other.m_ball_engine_sentinel.load();
@@ -12,6 +15,8 @@ GameStateActive::GameStateActive(GameStateActive&& other): GameStateBase{std::mo
   if (m_ball_engine_sentinel) {
     start_ball_engine();
   }
+
+  m_event_handler = other.m_event_handler;
 }
 
 auto GameStateActive::operator=(GameStateActive&& other) -> GameStateActive& {
@@ -25,6 +30,7 @@ auto GameStateActive::operator=(GameStateActive&& other) -> GameStateActive& {
       start_ball_engine();
     }
   }
+  m_event_handler = other.m_event_handler;
   return *this;
 }
 
@@ -86,6 +92,7 @@ auto GameStateActive::ball_engine_loop() -> void {
   while (m_ball_engine_sentinel) {
     frame_start = std::chrono::steady_clock::now();
     m_board.shift_ball();
+    m_event_handler(Event::BallMoved);
     frame_end = std::chrono::steady_clock::now();
     frame_duration = frame_start - frame_end;
     if (frame_duration < k_update_interval) {

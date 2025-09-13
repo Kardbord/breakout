@@ -17,12 +17,12 @@ namespace breakout::view {
 
 namespace Event {
 
-const ftxui::Event QuitButton         = ftxui::Event::Special("QuitButton");
-const ftxui::Event MainMenuPlayButton = ftxui::Event::Special("MainMenuPlayButton");
-const ftxui::Event HelpButton         = ftxui::Event::Special("GoToHelpButton");
-const ftxui::Event MainMenuButton     = ftxui::Event::Special("GoToMainMenuButton");
+static inline const ftxui::Event QuitButton         = ftxui::Event::Special("QuitButton");
+static inline const ftxui::Event MainMenuPlayButton = ftxui::Event::Special("MainMenuPlayButton");
+static inline const ftxui::Event HelpButton         = ftxui::Event::Special("GoToHelpButton");
+static inline const ftxui::Event MainMenuButton     = ftxui::Event::Special("GoToMainMenuButton");
 
-}
+} // namespace Event
 
 class GameView {
 public:

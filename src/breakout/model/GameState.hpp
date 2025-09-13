@@ -2,11 +2,12 @@
 #define BREAKOUT_GAMESTATE_HPP
 
 #include <atomic>
+#include <breakout/controller/EventHandler.hpp>
+#include <breakout/model/GameBoard.hpp>
 #include <ftxui/component/event.hpp>
 #include <optional>
 #include <thread>
 #include <variant>
-#include <breakout/model/GameBoard.hpp>
 
 namespace breakout::model {
 
@@ -68,12 +69,19 @@ public:
 protected:
 };
 
+namespace Event {
+
+static inline const ftxui::Event BallMoved = ftxui::Event::Special("BallMoved");
+
+} // namespace Event
+
 class GameStateActive : public GameStateBase {
 public:
 
   constexpr inline static uint32_t k_ball_engine_update_rate_hz = 5;
 
-  GameStateActive() = default;
+  GameStateActive() = delete;
+  GameStateActive(controller::EventHandler const &h);
   ~GameStateActive();
 
   GameStateActive(const GameStateActive&) = delete;
@@ -97,6 +105,8 @@ protected:
 
   std::atomic_bool m_ball_engine_sentinel;
   std::optional<std::thread> m_ball_engine_thread;
+
+  controller::EventHandler m_event_handler;
 };
 
 // The ordering of template types is important here, as the
