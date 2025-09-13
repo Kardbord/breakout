@@ -178,19 +178,19 @@ auto GameBoard::shift_paddle_right(uint32_t const shift) -> void {
 auto GameBoard::shift_ball(uint32_t const shift) -> void {
   auto const [ball_x, ball_y] = idx_to_coords(m_ball_start_idx);
   switch (m_ball_trajectory) {
-    case BallTrajectory::UpRight: {
+    case BallTrajectory::DownRight: {
       move_ball(ball_x + shift, ball_y + shift);
       break;
     }
-    case BallTrajectory::UpLeft: {
+    case BallTrajectory::DownLeft: {
       move_ball(ball_x - shift, ball_y + shift);
       break;
     }
-    case BallTrajectory::DownRight: {
+    case BallTrajectory::UpRight: {
       move_ball(ball_x + shift, ball_y - shift);
       break;
     }
-    case BallTrajectory::DownLeft: {
+    case BallTrajectory::UpLeft: {
       move_ball(ball_x - shift, ball_y - shift);
       break;
     }
