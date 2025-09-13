@@ -50,7 +50,7 @@ public:
   auto has_any_properties(std::initializer_list<Property> const &properties) const -> bool;
 private:
 
-  CellType m_type;
+  CellType m_type{EMPTY};
 
   uint32_t m_properties{0};
 };
