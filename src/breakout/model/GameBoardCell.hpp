@@ -50,6 +50,9 @@ public:
 
   // Returns true if a cell possesses any of the provided properties
   auto has_any_properties(std::initializer_list<Property> const &properties) const -> bool;
+
+  // Returns the integer representation of all properties applicable to the cell.
+  auto cell_properties_value() const -> uint32_t;
 private:
 
   CellType m_type{EMPTY};

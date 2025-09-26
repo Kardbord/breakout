@@ -39,9 +39,13 @@ auto GameBoardCell::has_all_properties(std::initializer_list<Property> const &pr
 
 auto GameBoardCell::has_any_properties(std::initializer_list<Property> const &properties) const -> bool {
   for (auto const &p: properties) {
-    if ((m_properties & p) == 1) return true;
+    if ((m_properties & p) != 0) return true;
   }
   return false;
+}
+
+auto GameBoardCell::cell_properties_value() const -> uint32_t {
+  return m_properties;
 }
 
 } // namespace breakout::model
