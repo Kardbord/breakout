@@ -33,7 +33,7 @@ auto GameBoard::reset_board() -> void {
     m_board.at(i).add_properties({GameBoardCell::Property::COL_START});
   }
 
-  for (uint32_t i = m_board.size() - 1; i >= m_board.size() - BOARD_WIDTH; --i) {
+  for (uint32_t i = static_cast<uint32_t>(m_board.size()) - 1; i >= m_board.size() - BOARD_WIDTH; --i) {
     if (!is_col_end(i)) {
       std::logic_error("A bug in the program caused the COL_END property to be set incorrectly. This should be reported.");
     }
@@ -119,7 +119,10 @@ auto GameBoard::move_ball(uint32_t const ball_start_idx) -> void {
 
 auto GameBoard::check_ball_collisions() -> void {
   auto check_cell_collisions = [this](uint32_t const x, uint32_t const y) -> void {
-    auto const& cell = m_board.at(coords_to_idx(x, y));
+    uint32_t const x_offset = (m_ball_trajectory == BallTrajectory::DownLeft || m_ball_trajectory == BallTrajectory::UpLeft) ? -1 : 1;
+    uint32_t const y_offset = (m_ball_trajectory == BallTrajectory::UpLeft || m_ball_trajectory == BallTrajectory::UpRight) ? -1 : 1;
+
+    auto const& cell = m_board.at(coords_to_idx(x + x_offset, y + y_offset));
 
     switch (cell.get_cell_type()) {
       case GameBoardCell::EMPTY: {

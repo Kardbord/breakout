@@ -78,7 +78,7 @@ static inline const ftxui::Event BallMoved = ftxui::Event::Special("BallMoved");
 class GameStateActive : public GameStateBase {
 public:
 
-  constexpr inline static uint32_t k_ball_engine_update_rate_hz = 5;
+  constexpr inline static uint32_t k_ball_engine_update_rate_hz = 32;
 
   GameStateActive() = delete;
   GameStateActive(controller::EventHandler const &h);
