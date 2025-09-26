@@ -56,6 +56,12 @@ public:
   // Is this cell the end of a row?
   static auto is_row_end(uint32_t idx) -> bool;
 
+  // Is this cell the start of a column?
+  static auto is_col_start(uint32_t idx) -> bool;
+
+  // Is this cell the end of a column?
+  static auto is_col_end(uint32_t idx) -> bool;
+
   using CellFunctor = std::function<void(GameBoardCell const&)>;
   auto for_each_cell(CellFunctor const &f) const -> void;
 
@@ -86,6 +92,8 @@ private:
   auto move_ball(uint32_t ball_start_idx) -> void;
   auto move_paddle(uint32_t paddle_start_x, uint32_t paddle_start_y) -> void;
   auto move_paddle(uint32_t paddle_start_idx) -> void;
+
+  auto check_ball_collisions() -> void;
 
   auto reset_bricks() -> void;
   auto reset_ball() -> void;

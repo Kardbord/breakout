@@ -26,6 +26,20 @@ auto GameBoard::reset_board() -> void {
     m_board.at(i).add_properties({GameBoardCell::Property::ROW_END});
   }
 
+  for (uint32_t i = 0; i < BOARD_WIDTH; ++i) {
+    if (!is_col_start(i)) {
+      throw std::logic_error("A bug in the program caused the COL_START property to be set incorrectly. This should be reported.");
+    }
+    m_board.at(i).add_properties({GameBoardCell::Property::COL_START});
+  }
+
+  for (uint32_t i = m_board.size() - 1; i >= m_board.size() - BOARD_WIDTH; --i) {
+    if (!is_col_end(i)) {
+      std::logic_error("A bug in the program caused the COL_END property to be set incorrectly. This should be reported.");
+    }
+    m_board.at(i).add_properties({GameBoardCell::Property::COL_END});
+  }
+
   reset_ball();
   reset_paddle();
   reset_bricks();
@@ -85,8 +99,8 @@ auto GameBoard::move_ball(uint32_t const ball_start_idx) -> void {
     auto [start_x, start_y] = idx_to_coords(m_ball_start_idx);
     for (uint32_t j = 0; j < BALL_HEIGHT; ++j) {
       for (uint32_t i = 0; i < BALL_WIDTH; ++i) {
-        uint32_t x = start_x + i;
-        uint32_t y = start_y + j;
+        uint32_t const x = start_x + i;
+        uint32_t const y = start_y + j;
 
         if (x >= BOARD_WIDTH || y >= BOARD_HEIGHT) {
           throw std::out_of_range("Ball exceeds board boundaries.");
@@ -99,7 +113,58 @@ auto GameBoard::move_ball(uint32_t const ball_start_idx) -> void {
 
   set_ball_cells(GameBoardCell::CellType::EMPTY);
   m_ball_start_idx = ball_start_idx;
+  check_ball_collisions();
   set_ball_cells(GameBoardCell::CellType::BALL);
+}
+
+auto GameBoard::check_ball_collisions() -> void {
+  auto check_cell_collisions = [this](uint32_t const x, uint32_t const y) -> void {
+    auto const& cell = m_board.at(coords_to_idx(x, y));
+
+    switch (cell.get_cell_type()) {
+      case GameBoardCell::EMPTY: {
+        // Check for collision with walls
+        if (cell.has_any_properties({GameBoardCell::ROW_END})) {
+          m_ball_trajectory = (m_ball_trajectory == BallTrajectory::DownRight) ? BallTrajectory::DownLeft : BallTrajectory::UpLeft;
+        } else if (cell.has_any_properties({GameBoardCell::ROW_START})) {
+          m_ball_trajectory = (m_ball_trajectory == BallTrajectory::DownLeft) ? BallTrajectory::DownRight : BallTrajectory::UpRight;
+        }
+
+        // Check for collision with ceiling and floor
+        if (cell.has_any_properties({GameBoardCell::COL_START})) {
+          m_ball_trajectory = (m_ball_trajectory == BallTrajectory::UpRight) ? BallTrajectory::DownRight : BallTrajectory::DownLeft;
+        } else if (cell.has_any_properties({GameBoardCell::COL_END})) {
+          reset_ball();
+          reset_paddle();
+        }
+
+        break;
+      }
+      case GameBoardCell::PADDLE: {
+        m_ball_trajectory = (m_ball_trajectory == BallTrajectory::DownRight) ? BallTrajectory::UpRight : BallTrajectory::UpLeft;
+        break;
+      }
+      case GameBoardCell::BRICK_RED: [[fallthrough]];
+      case GameBoardCell::BRICK_GREEN: [[fallthrough]];
+      case GameBoardCell::BRICK_YELLOW: [[fallthrough]];
+      case GameBoardCell::BRICK_ORANGE: {
+        // TODO: delete the brick in question
+        m_ball_trajectory = (m_ball_trajectory == BallTrajectory::UpRight) ? BallTrajectory::DownRight : BallTrajectory::DownLeft;
+        break;
+      }
+      case GameBoardCell::BALL: [[fallthrough]];
+      default: break;
+    }
+  };
+
+  auto [start_x, start_y] = idx_to_coords(m_ball_start_idx);
+  for (uint32_t j = 0; j < BALL_HEIGHT; ++j) {
+    for (uint32_t i = 0; i < BALL_WIDTH; ++i) {
+      uint32_t const x = start_x + i;
+      uint32_t const y = start_y + j;
+      check_cell_collisions(x, y);
+    }
+  }
 }
 
 auto GameBoard::move_paddle(uint32_t const paddle_start_x, uint32_t const paddle_start_y) -> void {
@@ -111,8 +176,8 @@ auto GameBoard::move_paddle(uint32_t const paddle_start_idx) -> void {
     auto [start_x, start_y] = idx_to_coords(m_paddle_start_idx);
     for (uint32_t j = 0; j < PADDLE_HEIGHT; ++j) {
       for (uint32_t i = 0; i < PADDLE_WIDTH; ++i) {
-        uint32_t x = start_x + i;
-        uint32_t y = start_y + j;
+        uint32_t const x = start_x + i;
+        uint32_t const y = start_y + j;
         m_board.at(coords_to_idx(x, y)).set_cell_type(ct);
       }
     }
@@ -159,6 +224,16 @@ auto GameBoard::is_row_start(uint32_t idx) -> bool {
 // Is this cell the end of a row?
 auto GameBoard::is_row_end(uint32_t idx) -> bool {
   return (idx % BOARD_WIDTH) == (BOARD_WIDTH - 1);
+}
+
+// Is this cell the start of a column?
+auto GameBoard::is_col_start(uint32_t idx) -> bool {
+  return (idx / BOARD_WIDTH) == 0;
+}
+
+// Is this cell the end of a column?
+auto GameBoard::is_col_end(uint32_t idx) -> bool {
+  return (idx / BOARD_WIDTH) == (BOARD_HEIGHT - 1);
 }
 
 auto GameBoard::for_each_cell(CellFunctor const &f) const -> void {

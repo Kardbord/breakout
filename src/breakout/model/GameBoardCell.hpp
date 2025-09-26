@@ -23,6 +23,8 @@ public:
     BRICK_END   = 1 << 1,
     ROW_START   = 1 << 2,
     ROW_END     = 1 << 3,
+    COL_START   = 1 << 4,
+    COL_END     = 1 << 5,
   };
 
   GameBoardCell() = default;
