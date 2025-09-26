@@ -35,7 +35,7 @@ auto GameBoard::reset_board() -> void {
 
   for (uint32_t i = static_cast<uint32_t>(m_board.size()) - 1; i >= m_board.size() - BOARD_WIDTH; --i) {
     if (!is_col_end(i)) {
-      std::logic_error("A bug in the program caused the COL_END property to be set incorrectly. This should be reported.");
+      throw std::logic_error("A bug in the program caused the COL_END property to be set incorrectly. This should be reported.");
     }
     m_board.at(i).add_properties({GameBoardCell::Property::COL_END});
   }
