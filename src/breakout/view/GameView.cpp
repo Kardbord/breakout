@@ -1,3 +1,4 @@
+#include <breakout/model/GameBoard.hpp>
 #include <breakout/utils/Visitor.hpp>
 #include <breakout/model/GameState.hpp>
 #include <breakout/view/GameView.hpp>
@@ -156,7 +157,7 @@ auto GameView::build_game_active(model::GameStateActive const &state) const -> f
       int x_idx = 0;
       int y_idx = 0;
       state.for_each_game_board_cell([&x_idx, &y_idx, &canvas](GBC const &cell) -> void {
-        if (!cell.has_all_properties({GBC::Property::BRICK_END})) {
+        if (!model::GameBoard::is_brick_end(x_idx, y_idx)) {
           switch (cell.get_cell_type()) {
             case GBC::CellType::EMPTY:
               break;
@@ -183,7 +184,7 @@ auto GameView::build_game_active(model::GameStateActive const &state) const -> f
           }
         }
 
-        if (cell.has_all_properties({GBC::Property::ROW_END})) {
+        if (model::GameBoard::is_row_end(x_idx, y_idx)) {
           x_idx = 0;
           ++y_idx;
         } else {

@@ -12,34 +12,6 @@ GameBoard::GameBoard() {
 }
 
 auto GameBoard::reset_board() -> void {
-  for (uint32_t i = 0; i < m_board.size(); i += BOARD_WIDTH) {
-    if (!is_row_start(i)) {
-      throw std::logic_error{"A bug in the program caused the ROW_START property to be set incorrectly. This should be reported."};
-    }
-    m_board.at(i).add_properties({GameBoardCell::Property::ROW_START});
-  }
-
-  for (uint32_t i = BOARD_WIDTH - 1; i < m_board.size(); i += BOARD_WIDTH) {
-    if (!is_row_end(i)) {
-      throw std::logic_error{"A bug in the program caused the ROW_END property to be set incorrectly. This should be reported."};
-    }
-    m_board.at(i).add_properties({GameBoardCell::Property::ROW_END});
-  }
-
-  for (uint32_t i = 0; i < BOARD_WIDTH; ++i) {
-    if (!is_col_start(i)) {
-      throw std::logic_error("A bug in the program caused the COL_START property to be set incorrectly. This should be reported.");
-    }
-    m_board.at(i).add_properties({GameBoardCell::Property::COL_START});
-  }
-
-  for (uint32_t i = static_cast<uint32_t>(m_board.size()) - 1; i >= m_board.size() - BOARD_WIDTH; --i) {
-    if (!is_col_end(i)) {
-      throw std::logic_error("A bug in the program caused the COL_END property to be set incorrectly. This should be reported.");
-    }
-    m_board.at(i).add_properties({GameBoardCell::Property::COL_END});
-  }
-
   reset_ball();
   reset_paddle();
   reset_bricks();
@@ -47,12 +19,6 @@ auto GameBoard::reset_board() -> void {
 
 auto GameBoard::reset_bricks() -> void {
   for (auto i = BRICK_START_IDX; i <= BRICK_END_IDX; ++i) {
-    if (is_brick_start(i)) {
-      m_board.at(i).add_properties({GameBoardCell::Property::BRICK_START});
-    } else if (is_brick_end(i)) {
-      m_board.at(i).add_properties({GameBoardCell::Property::BRICK_END});
-    }
-
     if (i < BOARD_WIDTH * BRICK_HEIGHT * 2) {
       // First 2 rows of bricks are red.
       m_board.at(i).set_cell_type(GameBoardCell::CellType::BRICK_RED);
@@ -81,7 +47,7 @@ auto GameBoard::coords_to_idx(uint32_t const x, uint32_t const y) -> uint32_t {
   return y * BOARD_WIDTH + x;
 }
 
-auto GameBoard::idx_to_coords(uint32_t const idx) const -> std::tuple<uint32_t, uint32_t> {
+auto GameBoard::idx_to_coords(uint32_t const idx) -> std::tuple<uint32_t, uint32_t> {
   if (idx >= BOARD_WIDTH * BOARD_HEIGHT) {
     throw std::out_of_range("idx out of bounds");
   }
@@ -121,22 +87,23 @@ auto GameBoard::check_ball_collisions() -> void {
   auto check_cell_collisions = [this](uint32_t const x, uint32_t const y) -> void {
     uint32_t const x_offset = (m_ball_trajectory == BallTrajectory::DownLeft || m_ball_trajectory == BallTrajectory::UpLeft) ? -1 : 1;
     uint32_t const y_offset = (m_ball_trajectory == BallTrajectory::UpLeft || m_ball_trajectory == BallTrajectory::UpRight) ? -1 : 1;
-
-    auto const& cell = m_board.at(coords_to_idx(x + x_offset, y + y_offset));
+    
+    uint32_t const idx = coords_to_idx(x + x_offset, y + y_offset);
+    auto const& cell = m_board.at(idx);
 
     switch (cell.get_cell_type()) {
       case GameBoardCell::EMPTY: {
         // Check for collision with walls
-        if (cell.has_any_properties({GameBoardCell::ROW_END})) {
+        if (is_row_end(idx)) {
           m_ball_trajectory = (m_ball_trajectory == BallTrajectory::DownRight) ? BallTrajectory::DownLeft : BallTrajectory::UpLeft;
-        } else if (cell.has_any_properties({GameBoardCell::ROW_START})) {
+        } else if (is_row_start(idx)) {
           m_ball_trajectory = (m_ball_trajectory == BallTrajectory::DownLeft) ? BallTrajectory::DownRight : BallTrajectory::UpRight;
         }
 
         // Check for collision with ceiling and floor
-        if (cell.has_any_properties({GameBoardCell::COL_START})) {
+        if (is_col_start(idx)) {
           m_ball_trajectory = (m_ball_trajectory == BallTrajectory::UpRight) ? BallTrajectory::DownRight : BallTrajectory::DownLeft;
-        } else if (cell.has_any_properties({GameBoardCell::COL_END})) {
+        } else if (is_col_end(idx)) {
           reset_ball();
           reset_paddle();
         }
@@ -245,23 +212,35 @@ auto GameBoard::is_brick_end(uint32_t const idx) -> bool {
   return idx >= BRICK_START_IDX && idx <= BRICK_END_IDX && (idx % BRICK_WIDTH) == (BRICK_WIDTH - 1);
 }
 
-// Is this cell the start of a row?
-auto GameBoard::is_row_start(uint32_t idx) -> bool {
+auto GameBoard::is_row_start(uint32_t const x, uint32_t const y) -> bool {
+  return is_row_start(coords_to_idx(x, y));
+}
+
+auto GameBoard::is_row_start(uint32_t const idx) -> bool {
   return idx % (BOARD_WIDTH) == 0;
 }
 
-// Is this cell the end of a row?
-auto GameBoard::is_row_end(uint32_t idx) -> bool {
+auto GameBoard::is_row_end(uint32_t const x, uint32_t const y) -> bool {
+  return is_row_end(coords_to_idx(x, y));
+}
+
+auto GameBoard::is_row_end(uint32_t const idx) -> bool {
   return (idx % BOARD_WIDTH) == (BOARD_WIDTH - 1);
 }
 
-// Is this cell the start of a column?
-auto GameBoard::is_col_start(uint32_t idx) -> bool {
+auto GameBoard::is_col_start(uint32_t const x, uint32_t const y) -> bool {
+  return is_col_start(coords_to_idx(x, y));
+}
+
+auto GameBoard::is_col_start(uint32_t const idx) -> bool {
   return (idx / BOARD_WIDTH) == 0;
 }
 
-// Is this cell the end of a column?
-auto GameBoard::is_col_end(uint32_t idx) -> bool {
+auto GameBoard::is_col_end(uint32_t const x, uint32_t const y) -> bool {
+  return is_col_end(coords_to_idx(x, y));
+}
+
+auto GameBoard::is_col_end(uint32_t const idx) -> bool {
   return (idx / BOARD_WIDTH) == (BOARD_HEIGHT - 1);
 }
 

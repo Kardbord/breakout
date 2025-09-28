@@ -34,6 +34,36 @@ public:
   static inline constexpr uint32_t BOARD_WIDTH  = BRICK_WIDTH * BRICKS_PER_ROW;
   static inline constexpr uint32_t BOARD_HEIGHT = EMPTY_ROWS + (ROWS_OF_BRICKS * BRICK_HEIGHT);
 
+  // Is this cell the beginning of a brick?
+  static auto is_brick_start(uint32_t x, uint32_t y) -> bool;
+  static auto is_brick_start(uint32_t idx) -> bool;
+
+  // Is this cell the end of a brick?
+  static auto is_brick_end(uint32_t x, uint32_t y) -> bool;
+  static auto is_brick_end(uint32_t idx) -> bool;
+
+  // Is this cell the start of a row?
+  static auto is_row_start(uint32_t x, uint32_t y) -> bool;
+  static auto is_row_start(uint32_t idx) -> bool;
+
+  // Is this cell the end of a row?
+  static auto is_row_end(uint32_t x, uint32_t y) -> bool;
+  static auto is_row_end(uint32_t idx) -> bool;
+
+  // Is this cell the start of a column?
+  static auto is_col_start(uint32_t x, uint32_t y) -> bool;
+  static auto is_col_start(uint32_t idx) -> bool;
+
+  // Is this cell the end of a column?
+  static auto is_col_end(uint32_t x, uint32_t y) -> bool;
+  static auto is_col_end(uint32_t idx) -> bool;
+
+  // Convert x/y coordinates to m_board index.
+  static auto coords_to_idx(uint32_t x, uint32_t y) -> uint32_t;
+
+  // Convert m_board index to x/y coordinates.
+  static auto idx_to_coords(uint32_t idx) -> std::tuple<uint32_t, uint32_t>;
+
   GameBoard();
   ~GameBoard() = default;
 
@@ -63,32 +93,6 @@ private:
 
   static inline constexpr uint32_t BRICK_START_IDX = 0;
   static inline constexpr uint32_t BRICK_END_IDX   = (BOARD_WIDTH * ROWS_OF_BRICKS * BRICK_HEIGHT) - 1;
-
-  // Is this cell the beginning of a brick?
-  static auto is_brick_start(uint32_t x, uint32_t y) -> bool;
-  static auto is_brick_start(uint32_t idx) -> bool;
-
-  // Is this cell the end of a brick?
-  static auto is_brick_end(uint32_t x, uint32_t y) -> bool;
-  static auto is_brick_end(uint32_t idx) -> bool;
-
-  // Is this cell the start of a row?
-  static auto is_row_start(uint32_t idx) -> bool;
-
-  // Is this cell the end of a row?
-  static auto is_row_end(uint32_t idx) -> bool;
-
-  // Is this cell the start of a column?
-  static auto is_col_start(uint32_t idx) -> bool;
-
-  // Is this cell the end of a column?
-  static auto is_col_end(uint32_t idx) -> bool;
-
-  // Convert x/y coordinates to m_board index.
-  static auto coords_to_idx(uint32_t x, uint32_t y) -> uint32_t;
-
-  // Convert m_board index to x/y coordinates.
-  auto idx_to_coords(uint32_t idx) const -> std::tuple<uint32_t, uint32_t>;
 
   auto move_ball(uint32_t ball_start_x, uint32_t ball_start_y) -> void;
   auto move_ball(uint32_t ball_start_idx) -> void;

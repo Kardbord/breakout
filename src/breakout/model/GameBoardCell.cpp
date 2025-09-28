@@ -1,5 +1,4 @@
 #include <breakout/model/GameBoardCell.hpp>
-#include <initializer_list>
 
 namespace breakout::model {
 
@@ -22,30 +21,6 @@ auto GameBoardCell::get_cell_value() const -> uint32_t {
     case BRICK_YELLOW: return 1;
     default:           return 0;
   }
-}
-
-auto GameBoardCell::add_properties(std::initializer_list<Property> const &properties) -> void {
-  for (auto const &p: properties) {
-    m_properties |= p;
-  }
-}
-
-auto GameBoardCell::has_all_properties(std::initializer_list<Property> const &properties) const -> bool {
-  for (auto const &p: properties) {
-    if ((m_properties & p) == 0) return false;
-  }
-  return true;
-}
-
-auto GameBoardCell::has_any_properties(std::initializer_list<Property> const &properties) const -> bool {
-  for (auto const &p: properties) {
-    if ((m_properties & p) != 0) return true;
-  }
-  return false;
-}
-
-auto GameBoardCell::cell_properties_value() const -> uint32_t {
-  return m_properties;
 }
 
 } // namespace breakout::model
