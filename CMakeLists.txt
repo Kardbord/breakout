@@ -38,11 +38,13 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(ftxui)
 
+find_package(Threads REQUIRED)
 target_link_libraries(
   ${CMAKE_PROJECT_NAME}
   PRIVATE ftxui::screen
   PRIVATE ftxui::dom
   PRIVATE ftxui::component
+  PRIVATE Threads::Threads
 )
 
 # -------------------------------
@@ -52,13 +54,19 @@ if(MSVC)
     target_compile_options(${CMAKE_PROJECT_NAME} PUBLIC /W4 /WX)
 elseif(EMSCRIPTEN)
     message(STATUS "Building for Emscripten/WebAssembly")
+
     set(CMAKE_EXECUTABLE_SUFFIX ".html")
+
+    target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE "-pthread")
+
     target_link_options(${CMAKE_PROJECT_NAME} PRIVATE
         "-sWASM=1"
+        "-sASSERTIONS=1"
         "-sALLOW_MEMORY_GROWTH=1"
         "-sEXIT_RUNTIME=1"
-        "-sASSERTIONS=1"
-        "-o ${CMAKE_BINARY_DIR}/index.html"
+        "-sUSE_PTHREADS=1"
+        "-sASYNCIFY=1"
+        "-sPROXY_TO_PTHREAD=1"
     )
 else()
     target_compile_options(
