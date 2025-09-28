@@ -15,7 +15,6 @@ GameController::GameController() : mp_state{std::make_shared<model::GameState>()
   m_view{mp_state, [this](ftxui::Event e) -> bool { return handle_event(e); }} {
   m_visitor = {
     [this](model::GameStateMainMenu& state)  -> bool { return handle_main_menu_events(state); },
-    [this](model::GameStatePauseMenu& state) -> bool { return handle_pause_menu_events(state); },
     [this](model::GameStateHelpMenu& state)  -> bool { return handle_help_menu_events(state); },
     [this](model::GameStateActive& state)    -> bool { return handle_game_active_events(state); },
   };
@@ -24,7 +23,6 @@ GameController::GameController() : mp_state{std::make_shared<model::GameState>()
 auto GameController::handle_event(ftxui::Event e) -> bool {
   std::visit(utils::Visitor{
     [e](model::GameStateMainMenu &state)  -> void { state.set_last_event(e); },
-    [e](model::GameStatePauseMenu &state) -> void { state.set_last_event(e); },
     [e](model::GameStateHelpMenu &state)  -> void { state.set_last_event(e); },
     [e](model::GameStateActive &state)    -> void { state.set_last_event(e); },
   }, *mp_state);
@@ -47,10 +45,6 @@ auto GameController::handle_main_menu_events(model::GameStateMainMenu& state) ->
   }
 
   return true;
-}
-
-auto GameController::handle_pause_menu_events(model::GameStatePauseMenu&) -> bool {
-  return false;
 }
 
 auto GameController::handle_help_menu_events(model::GameStateHelpMenu& state) -> bool {
@@ -88,6 +82,10 @@ auto GameController::handle_game_active_events(model::GameStateActive& state) ->
     state.shift_paddle_right();
   } else if (last_event == model::Event::BallMoved) {
     m_view.refresh();
+  } else if (last_event == ftxui::Event::Escape) {
+    // TODO: Implement a proper pause menu
+    *mp_state = model::GameStateHelpMenu{};
+    m_view.render();
   } else {
     return false;
   }

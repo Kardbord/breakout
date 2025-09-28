@@ -61,19 +61,16 @@ private:
   const std::weak_ptr<const model::GameState> mp_state;
 
   using VisitMainMenu  = std::function<ftxui::Component(model::GameStateMainMenu const&)>;
-  using VisitPauseMenu = std::function<ftxui::Component(model::GameStatePauseMenu const&)>;
   using VisitHelpMenu  = std::function<ftxui::Component(model::GameStateHelpMenu const&)>;
   using VisitActive    = std::function<ftxui::Component(model::GameStateActive const&)>;
 
   utils::Visitor<VisitMainMenu,
-  /**/    VisitPauseMenu,
   /**/    VisitHelpMenu,
   /**/    VisitActive> m_visitor;
 
   controller::EventHandler m_event_handler;
 
   auto build_main_menu(model::GameStateMainMenu const&)   const -> ftxui::Component;
-  auto build_pause_menu(model::GameStatePauseMenu const&) const -> ftxui::Component;
   auto build_help_menu(model::GameStateHelpMenu const&)   const -> ftxui::Component;
   auto build_game_active(model::GameStateActive const&)   const -> ftxui::Component;
 

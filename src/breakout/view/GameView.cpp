@@ -57,7 +57,7 @@ auto get_help_text() -> ftxui::Element {
     text(""),
     text("Move the paddle with a/d, h/l, or left/right"),
     text(""),
-    text("Pause the game with Esc"),
+    text("See this help menu with Esc. ⚠️ You won't be able to go back to your game!"),
     text(""),
     text("Quit the game at any time with Ctrl+c"),
   });
@@ -68,7 +68,6 @@ GameView::GameView(std::weak_ptr<const model::GameState> const p_state, controll
 {
   m_visitor = {
     [this](model::GameStateMainMenu const& state)  -> ftxui::Component { return build_main_menu(state); },
-    [this](model::GameStatePauseMenu const& state) -> ftxui::Component { return build_pause_menu(state); },
     [this](model::GameStateHelpMenu const& state)  -> ftxui::Component { return build_help_menu(state); },
     [this](model::GameStateActive const& state)    -> ftxui::Component { return build_game_active(state); },
   };
@@ -136,20 +135,13 @@ auto GameView::build_main_menu(model::GameStateMainMenu const&) const -> ftxui::
   });
 }
 
-auto GameView::build_pause_menu(model::GameStatePauseMenu const&) const -> ftxui::Component {
-  using ftxui::Renderer;
-  using ftxui::Element;
-  return Renderer([]() -> Element {
-    return verify_screen_requirement(ftxui::text("Pause menu placeholder"));
-  });
-}
-
 auto GameView::build_game_active(model::GameStateActive const &state) const -> ftxui::Component {
   using namespace::ftxui;
   using GB  = ::breakout::model::GameBoard;
   using GBC = ::breakout::model::GameBoardCell;
 
 
+  // TODO: show scoreboard
   return Renderer([&state]() -> Element {
     Canvas canvas(GB::BOARD_WIDTH, GB::BOARD_HEIGHT);
 

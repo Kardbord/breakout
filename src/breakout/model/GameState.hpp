@@ -43,19 +43,6 @@ public:
 protected:
 };
 
-class GameStatePauseMenu : public GameStateBase {
-public:
-  GameStatePauseMenu() = default;
-  ~GameStatePauseMenu() = default;
-
-  GameStatePauseMenu(const GameStatePauseMenu&) = default;
-  GameStatePauseMenu& operator=(const GameStatePauseMenu&) = default;
-  GameStatePauseMenu(GameStatePauseMenu&&) = default;
-  GameStatePauseMenu& operator=(GameStatePauseMenu&&) = default;
-
-protected:
-};
-
 class GameStateHelpMenu : public GameStateBase {
 public:
   GameStateHelpMenu() = default;
@@ -112,7 +99,6 @@ protected:
 // The ordering of template types is important here, as the
 // first alternative is initialized by default.
 using GameState = std::variant<model::GameStateMainMenu,
-/**/                           model::GameStatePauseMenu,
 /**/                           model::GameStateHelpMenu,
 /**/                           model::GameStateActive>;
 

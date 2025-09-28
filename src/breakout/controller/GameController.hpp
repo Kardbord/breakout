@@ -28,19 +28,16 @@ private:
   view::GameView m_view;
 
   using VisitMainMenu  = std::function<bool(model::GameStateMainMenu&)>;
-  using VisitPauseMenu = std::function<bool(model::GameStatePauseMenu&)>;
   using VisitHelpMenu  = std::function<bool(model::GameStateHelpMenu&)>;
   using VisitActive    = std::function<bool(model::GameStateActive&)>;
 
   utils::Visitor<VisitMainMenu,
-  /**/    VisitPauseMenu,
   /**/    VisitHelpMenu,
   /**/    VisitActive> m_visitor;
 
   auto handle_event(ftxui::Event) -> bool;
 
   auto handle_main_menu_events(model::GameStateMainMenu&)   -> bool;
-  auto handle_pause_menu_events(model::GameStatePauseMenu&) -> bool;
   auto handle_help_menu_events(model::GameStateHelpMenu&)   -> bool;
   auto handle_game_active_events(model::GameStateActive&)   -> bool;
 };
