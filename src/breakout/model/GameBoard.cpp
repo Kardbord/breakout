@@ -71,7 +71,7 @@ auto GameBoard::reset_bricks() -> void {
   }
 }
 
-auto GameBoard::coords_to_idx(uint32_t const x, uint32_t const y) const -> uint32_t {
+auto GameBoard::coords_to_idx(uint32_t const x, uint32_t const y) -> uint32_t {
   if (x >= BOARD_WIDTH) {
     throw std::out_of_range("X coordinate out of bounds");
   }
@@ -151,7 +151,7 @@ auto GameBoard::check_ball_collisions() -> void {
       case GameBoardCell::BRICK_GREEN: [[fallthrough]];
       case GameBoardCell::BRICK_YELLOW: [[fallthrough]];
       case GameBoardCell::BRICK_ORANGE: {
-        // TODO: delete the brick in question
+        remove_brick(x + x_offset, y + y_offset);
         m_ball_trajectory = (m_ball_trajectory == BallTrajectory::UpRight) ? BallTrajectory::DownRight : BallTrajectory::DownLeft;
         break;
       }
@@ -168,6 +168,24 @@ auto GameBoard::check_ball_collisions() -> void {
       check_cell_collisions(x, y);
     }
   }
+}
+
+auto GameBoard::remove_brick(uint32_t const x, uint32_t const y) -> void {
+  if (coords_to_idx(x, y) > m_board.size()) {
+    throw std::out_of_range{"remove_brick: x and y are out of range"};
+  }
+
+  uint32_t const brick_start_x = (x / BRICK_WIDTH) * BRICK_WIDTH;
+  uint32_t const brick_start_y = (y / BRICK_HEIGHT) * BRICK_HEIGHT;
+
+  for (uint32_t dx = 0; dx < BRICK_WIDTH; ++dx) {
+    for (uint32_t dy = 0; dy < BRICK_HEIGHT; ++dy) {
+      uint32_t const idx = coords_to_idx(brick_start_x + dx, brick_start_y + dy);
+      m_board.at(idx).set_cell_type(GameBoardCell::CellType::EMPTY);
+    }
+  }
+
+  // TODO: Increment game score
 }
 
 auto GameBoard::move_paddle(uint32_t const paddle_start_x, uint32_t const paddle_start_y) -> void {
@@ -211,8 +229,16 @@ auto GameBoard::reset_paddle() -> void {
   move_paddle(paddle_x, paddle_y);
 }
 
+auto GameBoard::is_brick_start(uint32_t const x, uint32_t const y) -> bool {
+  return is_brick_start(coords_to_idx(x, y));
+}
+
 auto GameBoard::is_brick_start(uint32_t const idx) -> bool {
   return idx >= BRICK_START_IDX && idx <= BRICK_END_IDX && idx % BRICK_WIDTH == 0;
+}
+
+auto GameBoard::is_brick_end(uint32_t const x, uint32_t const y) -> bool {
+  return is_brick_end(coords_to_idx(x, y));
 }
 
 auto GameBoard::is_brick_end(uint32_t const idx) -> bool {

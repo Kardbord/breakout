@@ -44,24 +44,6 @@ public:
 
   auto reset_board() -> void;
 
-  // Is this cell the beginning of a brick?
-  static auto is_brick_start(uint32_t idx) -> bool;
-
-  // Is this cell the end of a brick?
-  static auto is_brick_end(uint32_t idx) -> bool;
-
-  // Is this cell the start of a row?
-  static auto is_row_start(uint32_t idx) -> bool;
-
-  // Is this cell the end of a row?
-  static auto is_row_end(uint32_t idx) -> bool;
-
-  // Is this cell the start of a column?
-  static auto is_col_start(uint32_t idx) -> bool;
-
-  // Is this cell the end of a column?
-  static auto is_col_end(uint32_t idx) -> bool;
-
   using CellFunctor = std::function<void(GameBoardCell const&)>;
   auto for_each_cell(CellFunctor const &f) const -> void;
 
@@ -82,8 +64,28 @@ private:
   static inline constexpr uint32_t BRICK_START_IDX = 0;
   static inline constexpr uint32_t BRICK_END_IDX   = (BOARD_WIDTH * ROWS_OF_BRICKS * BRICK_HEIGHT) - 1;
 
+  // Is this cell the beginning of a brick?
+  static auto is_brick_start(uint32_t x, uint32_t y) -> bool;
+  static auto is_brick_start(uint32_t idx) -> bool;
+
+  // Is this cell the end of a brick?
+  static auto is_brick_end(uint32_t x, uint32_t y) -> bool;
+  static auto is_brick_end(uint32_t idx) -> bool;
+
+  // Is this cell the start of a row?
+  static auto is_row_start(uint32_t idx) -> bool;
+
+  // Is this cell the end of a row?
+  static auto is_row_end(uint32_t idx) -> bool;
+
+  // Is this cell the start of a column?
+  static auto is_col_start(uint32_t idx) -> bool;
+
+  // Is this cell the end of a column?
+  static auto is_col_end(uint32_t idx) -> bool;
+
   // Convert x/y coordinates to m_board index.
-  auto coords_to_idx(uint32_t x, uint32_t y) const -> uint32_t;
+  static auto coords_to_idx(uint32_t x, uint32_t y) -> uint32_t;
 
   // Convert m_board index to x/y coordinates.
   auto idx_to_coords(uint32_t idx) const -> std::tuple<uint32_t, uint32_t>;
@@ -94,6 +96,7 @@ private:
   auto move_paddle(uint32_t paddle_start_idx) -> void;
 
   auto check_ball_collisions() -> void;
+  auto remove_brick(uint32_t x, uint32_t y) -> void;
 
   auto reset_bricks() -> void;
   auto reset_ball() -> void;

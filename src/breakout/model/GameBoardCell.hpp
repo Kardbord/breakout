@@ -18,6 +18,7 @@ public:
     PADDLE,
   };
 
+  // TODO: Remove these, they are not necessary
   enum Property : uint32_t {
     BRICK_START = 1 << 0,
     BRICK_END   = 1 << 1,
