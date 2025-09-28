@@ -21,16 +21,16 @@ auto GameBoard::reset_bricks() -> void {
   for (auto i = BRICK_START_IDX; i <= BRICK_END_IDX; ++i) {
     if (i < BOARD_WIDTH * BRICK_HEIGHT * 2) {
       // First 2 rows of bricks are red.
-      m_board.at(i).set_cell_type(GameBoardCell::CellType::BRICK_RED);
+      m_board.at(i).set_cell_type(GameBoardCell::CellType::BrickRed);
     } else if (i < BOARD_WIDTH * BRICK_HEIGHT * 4) {
       // Second 2 rows of bricks are orange
-      m_board.at(i).set_cell_type(GameBoardCell::CellType::BRICK_ORANGE);
+      m_board.at(i).set_cell_type(GameBoardCell::CellType::BrickOrange);
     } else if (i < BOARD_WIDTH * BRICK_HEIGHT * 6) {
       // Third 2 rows of bricks are green
-      m_board.at(i).set_cell_type(GameBoardCell::CellType::BRICK_GREEN);
+      m_board.at(i).set_cell_type(GameBoardCell::CellType::BrickGreen);
     } else if (i < BOARD_WIDTH * BRICK_HEIGHT * 8) {
       // Fourth 2 rows of bricks are yellow
-      m_board.at(i).set_cell_type(GameBoardCell::CellType::BRICK_YELLOW);
+      m_board.at(i).set_cell_type(GameBoardCell::CellType::BrickYellow);
     } else {
       throw std::out_of_range("A bug in the program caused us to go out of range while resetting bricks. This should be reported.");
     }
@@ -77,10 +77,10 @@ auto GameBoard::move_ball(uint32_t const ball_start_idx) -> void {
     }
   };
 
-  set_ball_cells(GameBoardCell::CellType::EMPTY);
+  set_ball_cells(GameBoardCell::CellType::Empty);
   m_ball_start_idx = ball_start_idx;
   check_ball_collisions();
-  set_ball_cells(GameBoardCell::CellType::BALL);
+  set_ball_cells(GameBoardCell::CellType::Ball);
 }
 
 auto GameBoard::check_ball_collisions() -> void {
@@ -92,7 +92,7 @@ auto GameBoard::check_ball_collisions() -> void {
     auto const& cell = m_board.at(idx);
 
     switch (cell.get_cell_type()) {
-      case GameBoardCell::EMPTY: {
+      case GameBoardCell::CellType::Empty: {
         // Check for collision with walls
         if (is_row_end(idx)) {
           m_ball_trajectory = (m_ball_trajectory == BallTrajectory::DownRight) ? BallTrajectory::DownLeft : BallTrajectory::UpLeft;
@@ -110,19 +110,19 @@ auto GameBoard::check_ball_collisions() -> void {
 
         break;
       }
-      case GameBoardCell::PADDLE: {
+      case GameBoardCell::Paddle: {
         m_ball_trajectory = (m_ball_trajectory == BallTrajectory::DownRight) ? BallTrajectory::UpRight : BallTrajectory::UpLeft;
         break;
       }
-      case GameBoardCell::BRICK_RED: [[fallthrough]];
-      case GameBoardCell::BRICK_GREEN: [[fallthrough]];
-      case GameBoardCell::BRICK_YELLOW: [[fallthrough]];
-      case GameBoardCell::BRICK_ORANGE: {
+      case GameBoardCell::BrickRed: [[fallthrough]];
+      case GameBoardCell::BrickGreen: [[fallthrough]];
+      case GameBoardCell::BrickYellow: [[fallthrough]];
+      case GameBoardCell::BrickOrange: {
         remove_brick(x + x_offset, y + y_offset);
         m_ball_trajectory = (m_ball_trajectory == BallTrajectory::UpRight) ? BallTrajectory::DownRight : BallTrajectory::DownLeft;
         break;
       }
-      case GameBoardCell::BALL: [[fallthrough]];
+      case GameBoardCell::CellType::Ball: [[fallthrough]];
       default: break;
     }
   };
@@ -148,7 +148,7 @@ auto GameBoard::remove_brick(uint32_t const x, uint32_t const y) -> void {
   for (uint32_t dx = 0; dx < BRICK_WIDTH; ++dx) {
     for (uint32_t dy = 0; dy < BRICK_HEIGHT; ++dy) {
       uint32_t const idx = coords_to_idx(brick_start_x + dx, brick_start_y + dy);
-      m_board.at(idx).set_cell_type(GameBoardCell::CellType::EMPTY);
+      m_board.at(idx).set_cell_type(GameBoardCell::CellType::Empty);
     }
   }
 
@@ -179,9 +179,9 @@ auto GameBoard::move_paddle(uint32_t const paddle_start_idx) -> void {
     corrected_idx = board_size - (BOARD_WIDTH * PADDLE_HEIGHT) + BOARD_WIDTH - PADDLE_WIDTH;
   }
 
-  set_paddle_cells(GameBoardCell::CellType::EMPTY);
+  set_paddle_cells(GameBoardCell::CellType::Empty);
   m_paddle_start_idx = corrected_idx;
-  set_paddle_cells(GameBoardCell::CellType::PADDLE);
+  set_paddle_cells(GameBoardCell::CellType::Paddle);
 }
 
 auto GameBoard::reset_ball() -> void {

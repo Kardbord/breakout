@@ -151,24 +151,24 @@ auto GameView::build_game_active(model::GameStateActive const &state) const -> f
       state.for_each_game_board_cell([&x_idx, &y_idx, &canvas](GBC const &cell) -> void {
         if (!model::GameBoard::is_brick_end(x_idx, y_idx)) {
           switch (cell.get_cell_type()) {
-            case GBC::CellType::EMPTY:
+            case GBC::CellType::Empty:
               break;
-            case GBC::CellType::BRICK_RED:
+            case GBC::CellType::BrickRed:
               canvas.DrawBlock(x_idx, y_idx, true, Color::Red);
               break;
-            case GBC::CellType::BRICK_ORANGE:
+            case GBC::CellType::BrickOrange:
               canvas.DrawBlock(x_idx, y_idx, true, Color::DarkOrange);
               break;
-            case GBC::CellType::BRICK_GREEN:
+            case GBC::CellType::BrickGreen:
               canvas.DrawBlock(x_idx, y_idx, true, Color::Green);
               break;
-            case GBC::CellType::BRICK_YELLOW:
+            case GBC::CellType::BrickYellow:
               canvas.DrawBlock(x_idx, y_idx, true, Color::Yellow);
               break;
-            case GBC::CellType::BALL:
+            case GBC::CellType::Ball:
               canvas.DrawBlock(x_idx, y_idx, true, Color::White);
               break;
-            case GBC::CellType::PADDLE:
+            case GBC::CellType::Paddle:
               canvas.DrawBlock(x_idx, y_idx, true, Color::White);
               break;
             default:

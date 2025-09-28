@@ -9,13 +9,13 @@ namespace breakout::model {
 class GameBoardCell {
 public:
   enum CellType {
-    EMPTY,
-    BRICK_RED,
-    BRICK_ORANGE,
-    BRICK_GREEN,
-    BRICK_YELLOW,
-    BALL,
-    PADDLE,
+    Empty,
+    BrickRed,
+    BrickOrange,
+    BrickGreen,
+    BrickYellow,
+    Ball,
+    Paddle,
   };
 
   GameBoardCell() = default;
@@ -35,7 +35,7 @@ public:
 
 private:
 
-  CellType m_type{EMPTY};
+  CellType m_type{Empty};
 
   uint32_t m_properties{0};
 };

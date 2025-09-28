@@ -15,11 +15,11 @@ auto GameBoardCell::get_cell_type() const -> CellType {
 auto GameBoardCell::get_cell_value() const -> uint32_t {
   // Point values from https://en.wikipedia.org/wiki/Breakout_(video_game)
   switch (m_type) {
-    case BRICK_RED:    return 7;
-    case BRICK_ORANGE: return 5;
-    case BRICK_GREEN:  return 3;
-    case BRICK_YELLOW: return 1;
-    default:           return 0;
+    case BrickRed:    return 7;
+    case BrickOrange: return 5;
+    case BrickGreen:  return 3;
+    case BrickYellow: return 1;
+    default:          return 0;
   }
 }
 
