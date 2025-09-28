@@ -36,8 +36,6 @@ public:
 private:
 
   CellType m_type{Empty};
-
-  uint32_t m_properties{0};
 };
 
 } // namespace breakout::model
