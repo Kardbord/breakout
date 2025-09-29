@@ -55,19 +55,28 @@ if(MSVC)
 elseif(EMSCRIPTEN)
     message(STATUS "Building for Emscripten/WebAssembly")
 
-    set(CMAKE_EXECUTABLE_SUFFIX ".html")
-
+    set(CMAKE_EXECUTABLE_SUFFIX ".js")
     target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE "-pthread")
-
     target_link_options(${CMAKE_PROJECT_NAME} PRIVATE
-        "-sWASM=1"
-        "-sASSERTIONS=1"
-        "-sALLOW_MEMORY_GROWTH=1"
-        "-sEXIT_RUNTIME=1"
-        "-sUSE_PTHREADS=1"
-        "-sASYNCIFY=1"
-        "-sPROXY_TO_PTHREAD=1"
+        -sWASM=1
+        -sASSERTIONS=2
+        -sALLOW_MEMORY_GROWTH=1
+        -sEXIT_RUNTIME=0
+        -sUSE_PTHREADS=1
+        -sASYNCIFY=1
+        -pthread
+        -sPROXY_TO_PTHREAD=1
+        -sSTACK_SIZE=1MB
+        -sEXPORTED_FUNCTIONS=[_main,_ftxui_on_resize,ccall,cwrap]
     )
+    target_link_options(component PUBLIC "SHELL: -s ALLOW_MEMORY_GROWTH=1")
+    foreach(file
+        "index.css"
+        "index.html"
+        "index.mjs"
+        "sw.js")
+        configure_file(${file} ${file})
+    endforeach()
 else()
     target_compile_options(
         ${CMAKE_PROJECT_NAME}

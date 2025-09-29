@@ -15,11 +15,19 @@
 namespace breakout::view {
 
 auto get_term_width() -> int {
+#ifdef __EMSCRIPTEN__
+  return 9999;
+#else
   return ftxui::Terminal::Size().dimx;
+#endif
 }
 
 auto get_term_height() -> int {
+#ifdef __EMSCRIPTEN__
+  return 9999;
+#else
   return ftxui::Terminal::Size().dimy;
+#endif
 }
 
 auto get_title_art() -> ftxui::Element {
@@ -85,10 +93,14 @@ auto GameView::render() -> void {
   }
 
   renderer |= ftxui::CatchEvent([&](ftxui::Event event) -> bool { return m_event_handler(event); });
+#ifdef __EMSCRIPTEN__
+  static auto screen = ftxui::ScreenInteractive::FitComponent();
+#else
   exit_main_loop();
-  auto screen = ftxui::ScreenInteractive::Fullscreen();
+  static auto screen = ftxui::ScreenInteractive::Fullscreen();
+#endif
   m_exit_closure = screen.ExitLoopClosure();
-  m_refresh_closure = [&screen]() -> void {
+  m_refresh_closure = []() -> void {
     screen.PostEvent(Event::RefreshRequested);
   };
   screen.Loop(renderer);
