@@ -75,3 +75,4 @@ window.Module = {
   },
 };
 
+document.querySelector("#breakout_script").src = "./breakout.js"
