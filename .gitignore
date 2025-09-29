@@ -36,3 +36,5 @@
 !/build/README.md
 .vscode/
 .cache
+*.log
+compile_commands.json
