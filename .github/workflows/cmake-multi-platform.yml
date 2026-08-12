@@ -69,8 +69,9 @@ jobs:
             generator: ""
 
     steps:
-    - uses: actions/checkout@v4
-    - uses: seanmiddleditch/gha-setup-ninja@v5
+    - uses: actions/checkout@v7
+      with:
+        submodules: recursive
 
     - name: Set reusable strings
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
