@@ -24,19 +24,12 @@ set("${CMAKE_PROJECT_NAME}_SRC"
 add_executable(${CMAKE_PROJECT_NAME} ${${CMAKE_PROJECT_NAME}_SRC})
 
 # -------------------------------
-# Fetch FTXUI
+# Dependencies
 # -------------------------------
-include(FetchContent)
-set(FETCHCONTENT_UPDATES_DISCONNECTED TRUE)
 set(FTXUI_ENABLE_INSTALL OFF CACHE BOOL "Disable install target for FTXUI library")
 set(FTXUI_QUIET ON CACHE BOOL "Quiet FTXUI library")
+add_subdirectory(external)
 
-FetchContent_Declare(
-  ftxui
-  GIT_REPOSITORY https://github.com/ArthurSonzogni/ftxui
-  GIT_TAG 1d40687a403b7babdafdd577d10e001840b0f124
-)
-FetchContent_MakeAvailable(ftxui)
 
 find_package(Threads REQUIRED)
 target_link_libraries(
