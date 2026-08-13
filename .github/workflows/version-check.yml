@@ -1,0 +1,38 @@
+name: Version Consistency Check
+on:
+  pull_request:
+    branches:
+      - main
+jobs:
+  check-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Verify Version Bump
+        run: |
+          set -euo pipefail
+
+          # Extract version from target branch (base)
+          BASE_VERSION=$(git show origin/${{ github.base_ref }}:VERSION | tr -d '\r\n')
+
+          # Extract version from current branch (head)
+          HEAD_VERSION=$(cat VERSION | tr -d '\r\n')
+
+          echo "Base version: $BASE_VERSION"
+          echo "Head version: $HEAD_VERSION"
+
+          if [ "$BASE_VERSION" = "$HEAD_VERSION" ]; then
+            # Identify changes excluding non-code files
+            CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -vE '^(\.github/|docs/|LICENSE)')
+
+            if [ -n "$CHANGED_FILES" ]; then
+              echo "::error::Changes detected in source or build files, but the project version was not updated in the VERSION file."
+              echo "Please bump the version in the VERSION file."
+              exit 1
+            fi
+            echo "No meaningful changes detected; version bump not required."
+          else
+            echo "Version bump detected: $BASE_VERSION -> $HEAD_VERSION. Verification passed."
+          fi

@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
-project(breakout)
+file(READ "VERSION" PROJECT_VERSION)
+string(STRIP "${PROJECT_VERSION}" PROJECT_VERSION)
+project(breakout VERSION ${PROJECT_VERSION} LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 
 if(NOT CMAKE_BUILD_TYPE)
@@ -91,5 +93,7 @@ if(NOT EMSCRIPTEN)
     include(GNUInstallDirs)
     install(TARGETS ${CMAKE_PROJECT_NAME}
             RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+    install(FILES LICENSE
+            DESTINATION ${CMAKE_INSTALL_DOCDIR})
 endif()
 
