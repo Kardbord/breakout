@@ -84,3 +84,12 @@ else()
     )
 endif()
 
+# -------------------------------
+# Install
+# -------------------------------
+if(NOT EMSCRIPTEN)
+    include(GNUInstallDirs)
+    install(TARGETS ${CMAKE_PROJECT_NAME}
+            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+endif()
+
