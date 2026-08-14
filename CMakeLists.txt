@@ -29,6 +29,7 @@ add_executable(${CMAKE_PROJECT_NAME} ${${CMAKE_PROJECT_NAME}_SRC})
 # -------------------------------
 # Dependencies
 # -------------------------------
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 set(FTXUI_ENABLE_INSTALL OFF CACHE BOOL "Disable install target for FTXUI library")
 set(FTXUI_QUIET ON CACHE BOOL "Quiet FTXUI library")
 add_subdirectory(external)
